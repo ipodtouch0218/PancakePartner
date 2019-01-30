@@ -3,6 +3,7 @@ package me.ipodtouch0218.pancakepartner.commands;
 import java.awt.Color;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import me.ipodtouch0218.pancakepartner.BotMain;
 import me.ipodtouch0218.pancakepartner.utils.MessageUtils;
@@ -22,8 +23,9 @@ public class CmdHelp extends BotCommand {
 		setHelpInfo("Provides either a list of commands or command-specific usage info.", "help [#|command]");
 	}
 
+	//--//
 	@Override
-	public void execute(Message msg, String[] args) {
+	public void execute(Message msg, String alias, String[] args) {
 		MessageChannel channel = msg.getChannel();
 		User sender = msg.getAuthor();
 		
@@ -80,6 +82,10 @@ public class CmdHelp extends BotCommand {
 		embed.setDescription("*Usage: " + BotMain.getBotSettings().getCommandPrefix() + cmd.getUsage() + "*");
 		embed.addField("Description", cmd.getDescription(), false);
 		embed.addField("Required Permission", (cmd.getPermission() == null ? "None" : cmd.getPermission().name()), false);
+		
+		if (cmd.getAliases() != null) {
+			embed.addField("Aliases", Arrays.toString(cmd.getAliases()), false);
+		}
 		embed.setFooter("Requested by " + MessageUtils.nameAndDiscrim(sender), sender.getAvatarUrl()).setTimestamp(Instant.now());
 		
 		channel.sendMessage(embed.build()).queue();

@@ -8,6 +8,7 @@ public abstract class BotCommand {
 
 	//--Variables & Constructor--//
 	private String name;			//Command name. Used to run the command itself, [prefix][name]
+	private String[] aliases;		//The command can also be ran through these names. Command names take priority over aliases (if there's overlap)
 	private Permission permission;	//Permission the user needs to use this command.
 	
 	private String usage;			//Command usage, <> = required parameters, [] = optional parameters 
@@ -30,7 +31,7 @@ public abstract class BotCommand {
 	}
 	
 	//--//
-	public abstract void execute(Message msg, String[] args);
+	public abstract void execute(Message msg, String alias, String[] args);
 	
 	public void register(CommandHandler cmdHandler) {
 		cmdHandler.registerCommand(this);
@@ -44,9 +45,13 @@ public abstract class BotCommand {
 		this.usage = usage;
 		this.description = description; 
 	}
+	public void setAliases(String... alises) {
+		this.aliases = alises;
+	}
 	
 	//--Getters--//
 	public String getName() { return name; }
+	public String[] getAliases() { return aliases; }
 	public String getUsage() { return usage; }
 	public String getDescription() { return description; }
 	public Permission getPermission() { return permission; }

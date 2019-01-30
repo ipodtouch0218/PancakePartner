@@ -5,6 +5,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import me.ipodtouch0218.pancakepartner.BotMain;
+import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.User;
 
 public class MessageUtils {
@@ -69,4 +70,11 @@ public class MessageUtils {
 		return user.getName() + "#" + user.getDiscriminator();
 	}
 	
+	public static String getMessageURL(Message m) {
+		long guildId = m.getGuild().getIdLong();
+		long channelId = m.getChannel().getIdLong();
+		long messageId = m.getIdLong();
+		
+		return "https://discordapp.com/channels/" + guildId + "/" + channelId + "/" + messageId;
+	}
 }

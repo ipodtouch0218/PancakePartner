@@ -25,13 +25,18 @@ import net.dv8tion.jda.core.entities.TextChannel;
 
 public class CmdStar extends BotCommand {
 
-	private static Pattern linkPattern = Pattern.compile("(https?:\\/\\/)?discordapp\\.com\\/channels\\/(?<guild>\\d+)\\/(?<channel>\\d+)\\/(?<messageid>\\d+)");
+	private static Pattern linkPattern = Pattern.compile("(https?:\\/\\/)?(www\\.)?discordapp\\.com\\/channels\\/(?<guild>\\d+)\\/(?<channel>\\d+)\\/(?<messageid>\\d+)");
+	
+	//--Variables & Constructor--//
 	private static File saveFile = new File("starredmsgs.txt");
-	
 	public static HashMap<Long, Long> starredMessages = new HashMap<>();
-	
 	public MessageChannel starChannel;
 	
+	/* TODO:
+	 * - Support multiple guilds
+	 *   - Get all info from a Guild Settings object
+	 *   - Save all info to Guild-Specific files instead of one starredmsgs.txt
+	 */
 	public CmdStar(MessageChannel channel) {
 		super("star", true, false, Permission.MESSAGE_MANAGE);
 		starChannel = channel;
@@ -39,8 +44,9 @@ public class CmdStar extends BotCommand {
 		loadStarredMessages();
 	}
 
+	//--//
 	@Override
-	public void execute(Message msg, String[] args) {
+	public void execute(Message msg, String alias, String[] args) {
 		MessageChannel channel = msg.getChannel();
 		
 		if (args.length <= 0) {
@@ -58,7 +64,7 @@ public class CmdStar extends BotCommand {
 			}
 			TextChannel starMsgChannel = guild.getTextChannelById(match.group("channel"));
 			if (starMsgChannel == null) {
-				channel.sendMessage(":pancakes: **Invalid Argument:** I cannot access this message: Cannot access channel with the message.").queue();
+				channel.sendMessage(":pancakes: **Invalid Argument:** I cannot access this message: Cannot access/view channel with the message.").queue();
 				return;
 			}
 			
@@ -95,8 +101,9 @@ public class CmdStar extends BotCommand {
 		return;
 	}
 	
+	//--Sending starred message to channel--//
 	public void sendStarredMessage(Message msg) {
-		MessageEmbed embed = buildEmbed(msg);
+		MessageEmbed embed = buildStarredMessageEmbed(msg);
 		
 		starChannel.sendMessage(embed).queue(m -> {
 			starredMessages.put(msg.getIdLong(), m.getIdLong());
@@ -104,17 +111,14 @@ public class CmdStar extends BotCommand {
 		});
 	}
 	
-	public void editStarredMessage(long id) {
-		starChannel.getMessageById(id).queue(m -> {
-			MessageEmbed embed = buildEmbed(m);
-			
-			starChannel.getMessageById(starredMessages.get(m.getIdLong())).queue(editmsg -> {
-				editmsg.editMessage(embed).queue();
-			});
+	public void editStarredMessage(Message sourceMsg) {
+		MessageEmbed embed = buildStarredMessageEmbed(sourceMsg);
+		starChannel.getMessageById(starredMessages.get(sourceMsg.getIdLong())).queue(editmsg -> {
+			editmsg.editMessage(embed).queue();
 		});
 	}
 	
-	private MessageEmbed buildEmbed(Message m) {
+	private MessageEmbed buildStarredMessageEmbed(Message m) {
 		int starReactions = 1;
 		for (MessageReaction r : m.getReactions()) {
 			if (r.getReactionEmote().getName().equals("\u2B50")) {
@@ -122,17 +126,18 @@ public class CmdStar extends BotCommand {
 				break;
 			}
 		}
-		
+	
 		EmbedBuilder embed = new EmbedBuilder();
 		embed.setTitle("Starred Message - :star: " + starReactions);
 		embed.setColor(Color.ORANGE);
 		embed.setDescription(m.getContentDisplay());
-		embed.setFooter("-" + MessageUtils.nameAndDiscrim(m.getAuthor()), m.getAuthor().getAvatarUrl());
+		embed.setFooter(MessageUtils.nameAndDiscrim(m.getAuthor()), m.getAuthor().getAvatarUrl());
+		embed.addField("\u200E", "[Direct Link](" + MessageUtils.getMessageURL(m) + ")", false);
 		embed.setTimestamp(m.getCreationTime());
 		if (!m.getAttachments().isEmpty()) {
 			for (Attachment attachment : m.getAttachments()) {
 				if (attachment.isImage()) {
-					embed.setImage(attachment.getUrl());
+					embed.setThumbnail(attachment.getUrl());
 					break;
 				}
 			}
@@ -141,8 +146,7 @@ public class CmdStar extends BotCommand {
 		return embed.build();
 	}
 	
-	//---//
-	
+	//--Loading and Saving-//
 	private void saveStarredMessages() {
 		try {
 			if (!saveFile.exists()) { saveFile.createNewFile(); }

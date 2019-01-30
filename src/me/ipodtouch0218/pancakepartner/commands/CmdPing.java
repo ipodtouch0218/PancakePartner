@@ -8,11 +8,18 @@ public class CmdPing extends BotCommand {
 	public CmdPing() {
 		super("ping", true, true);
 		setHelpInfo("Pong! Replies with the time it takes for the bot to connect to Discord.", "ping");
+		setAliases("pong");
 	}
 	
+	//--//
 	@Override
-	public void execute(Message msg, String[] arguments) {
-		msg.getChannel().sendMessage(":pancakes: **Pong~!** `" + BotMain.getJdaInstance().getPing() + "ms`").queue();
+	public void execute(Message msg, String alias, String[] arguments) {
+		String reply = "Pong~!";
+		if (alias.equalsIgnoreCase("pong")) {
+			reply = "... Ping?";
+		}
+		
+		msg.getChannel().sendMessage(":pancakes: **" + reply + "** `" + BotMain.getJdaInstance().getPing() + "ms`").queue();
 		return;
 	}
 

@@ -43,7 +43,9 @@ public class MessageListener extends ListenerAdapter {
 			CmdStar starCmd = (CmdStar) BotMain.getCommandHandler().getCommandByName("star");
 			
 			if (CmdStar.starredMessages.containsKey(e.getMessageIdLong())) {
-				starCmd.editStarredMessage(e.getMessageIdLong());
+				e.getChannel().getMessageById(e.getMessageId()).queue(m -> {
+					starCmd.editStarredMessage(m);
+				});
 			} else {
 				int count = 1;
 				try {

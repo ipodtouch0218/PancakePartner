@@ -17,19 +17,18 @@ public class CommandHandler {
 
 	///INSTANCE STUFFS
 	//--Variables & Constructor--//
-	private ArrayList<BotCommand> commands		//list of all registered commands
-				= new ArrayList<>();
+	private ArrayList<BotCommand> commands = new ArrayList<>(); //list of all registered commands
 	
 	//--Command Execution--//
 	public void executeCommand(Message msg, User sender) {
 		if (!isCommand(msg)) { return; }	//not a command, but somehow got passed as one? huh.
 		MessageChannel channel = msg.getChannel();
 		
-		String prefixRegex = Matcher.quoteReplacement(BotMain.getBotSettings().getCommandPrefix());
+		String prefixRegex = Matcher.quoteReplacement(BotMain.getBotSettings().getCommandPrefix()); //regex to remove the command prefix from start of message
 		String strippedMessage = msg.getContentDisplay().replaceFirst(prefixRegex, "");	//removed the command prefix from the message
 		String[] splitMsg = strippedMessage.split(" ");	
 		
-		BotCommand command = getCommandByName(splitMsg[0]); 			//first argument is the command itself.
+		BotCommand command = getCommandByName(splitMsg[0]);	//first argument is the command itself.
 		if (command == null) {	
 			//invalid command, send error and return.
 			BotCommand closest = closestCommand(splitMsg[0]);
@@ -37,7 +36,7 @@ public class CommandHandler {
 			return;
 		}
 		if (!command.canExecute(msg)) {
-			//command cannot be ran through this channel
+			//command cannot be ran through this channel type
 			channel.sendMessage(":pancakes: **Error:** You cannot run this command in a " + (msg.getChannelType() == ChannelType.TEXT ? "Guild" : "DM") + "!").queue();
 			return;
 		}
@@ -53,7 +52,8 @@ public class CommandHandler {
 		}
 		
 		try {
-			command.execute(msg, args);
+			//finally, execute the command.
+			command.execute(msg, splitMsg[0], args);
 			
 			if (BotMain.getBotSettings().getDeleteIssuedCommand()) {
 				msg.delete().queue();
@@ -68,7 +68,7 @@ public class CommandHandler {
 	
 	//--Misc Functions--//
 	public static boolean isCommand(Message msg) {
-		return msg.getContentRaw().startsWith(BotMain.getBotSettings().getCommandPrefix());
+		return msg.getContentDisplay().startsWith(BotMain.getBotSettings().getCommandPrefix());
 	}
 	
 	private BotCommand closestCommand(String input) {
@@ -102,10 +102,24 @@ public class CommandHandler {
 	//--Getters--//
 	public ArrayList<BotCommand> getAllCommands() { return commands; }
 	public BotCommand getCommandByName(String name) {
+		BotCommand cmd = null;
 		for (BotCommand cmds : commands) {
-			if (cmds.getName().equalsIgnoreCase(name)) { return cmds; }
+			if (name.equalsIgnoreCase(cmds.getName())) { 
+				//matches name, don't check aliases
+				cmd = cmds; 
+				break; 
+			}
+			if (cmd != null || cmds.getAliases() == null) { continue; } //already found another command (through alias), continue looping.
+			aliasLoop:
+			for (String aliases : cmds.getAliases()) {
+				if (name.equalsIgnoreCase(aliases)) {
+					//matches an alias, but keep checking for other matches to the name.
+					cmd = cmds;
+					break aliasLoop;
+				}
+			}
 		}
-		return null;
+		return cmd;
 	}
 
 }
