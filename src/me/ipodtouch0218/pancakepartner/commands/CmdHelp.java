@@ -66,7 +66,7 @@ public class CmdHelp extends BotCommand {
 			BotCommand nextCmd = allCmds.get(i + (pagenumber * cmdsPerPage));
 
 			String title = nextCmd.getName();
-			page.addField(BotMain.getCommandHandler().getCommandPrefix() + title, nextCmd.getDescription(), false);
+			page.addField(BotMain.getBotSettings().getCommandPrefix() + title, nextCmd.getDescription(), false);
 		}
 		page.setFooter("Requested by " + MessageUtils.nameAndDiscrim(sender), sender.getAvatarUrl()).setTimestamp(Instant.now());
 		
@@ -77,7 +77,7 @@ public class CmdHelp extends BotCommand {
 		EmbedBuilder embed = new EmbedBuilder();
 		embed.setTitle(":pancakes: **Command Help:** `" + cmd.getName() + "`");
 		embed.setColor(Color.GREEN);
-		embed.setDescription("*Usage: " + BotMain.getCommandHandler().getCommandPrefix() + cmd.getUsage() + "*");
+		embed.setDescription("*Usage: " + BotMain.getBotSettings().getCommandPrefix() + cmd.getUsage() + "*");
 		embed.addField("Description", cmd.getDescription(), false);
 		embed.addField("Required Permission", (cmd.getPermission() == null ? "None" : cmd.getPermission().name()), false);
 		embed.setFooter("Requested by " + MessageUtils.nameAndDiscrim(sender), sender.getAvatarUrl()).setTimestamp(Instant.now());

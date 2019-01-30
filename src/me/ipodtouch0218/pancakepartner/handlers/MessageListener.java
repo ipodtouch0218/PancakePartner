@@ -22,7 +22,7 @@ public class MessageListener extends ListenerAdapter {
 		if (e.getAuthor().getIdLong() == BotMain.getJdaInstance().getSelfUser().getIdLong()) { return; }
 		if (CommandHandler.isCommand(msg)) {
 			//the message is a command, send to the commandhandler
-			BotMain.getCommandHandler().executeCommand(msg, author);	//result is if the command was successful.
+			BotMain.getCommandHandler().executeCommand(msg, author); //result is if the command was successful.
 		}
 	}
 	
@@ -41,7 +41,6 @@ public class MessageListener extends ListenerAdapter {
 	private void handleStarredReaction(GenericGuildMessageReactionEvent e) {
 		if (e.getReactionEmote().getName().equals("\u2B50")) { //star emote added
 			CmdStar starCmd = (CmdStar) BotMain.getCommandHandler().getCommandByName("star");
-//			if (starCmd.starChannel.equals(e.getChannel())) { return; }
 			
 			if (CmdStar.starredMessages.containsKey(e.getMessageIdLong())) {
 				starCmd.editStarredMessage(e.getMessageIdLong());

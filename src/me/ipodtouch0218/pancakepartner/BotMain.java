@@ -56,7 +56,7 @@ public class BotMain {
 				.setGame(Game.playing(settings.getBotPlayingMessage()))	//bot playing message, showing people usage.
 				.buildBlocking();							//finalizes and builds the bot
 		} catch (Exception e) {
-			System.err.println("Unable to start the bot!");	//error! shi-
+			System.err.println("Unable to start the bot!");	//error! shoot
 			e.printStackTrace();							//print error to the console output
 		}
 	}
