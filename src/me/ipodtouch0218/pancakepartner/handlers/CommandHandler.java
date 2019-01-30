@@ -66,7 +66,6 @@ public class CommandHandler {
 	}
 	
 	//--Misc Functions--//
-	
 	public static boolean isCommand(Message msg) {
 		return msg.getContentRaw().startsWith(cmdPrefix);
 	}

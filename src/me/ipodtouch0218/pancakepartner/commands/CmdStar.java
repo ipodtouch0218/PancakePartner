@@ -15,11 +15,13 @@ import me.ipodtouch0218.pancakepartner.BotMain;
 import me.ipodtouch0218.pancakepartner.utils.MessageUtils;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.Permission;
+import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.Message.Attachment;
 import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.entities.MessageEmbed;
 import net.dv8tion.jda.core.entities.MessageReaction;
+import net.dv8tion.jda.core.entities.TextChannel;
 
 public class CmdStar extends BotCommand {
 
@@ -33,7 +35,7 @@ public class CmdStar extends BotCommand {
 	public CmdStar(MessageChannel channel) {
 		super("star", true, false, Permission.MESSAGE_MANAGE);
 		starChannel = channel;
-		setHelpInfo("Forcefully pins a message to #" + channel.getName() + " for later viewing.", "star <message id|message url>");
+		setHelpInfo("Forcefully pins a message to #" + channel.getName() + " for later viewing. Turn on developer mode to be able to copy message IDs for this command's parameters.", "star <message id|message url>");
 		loadStarredMessages();
 	}
 
@@ -42,41 +44,53 @@ public class CmdStar extends BotCommand {
 		MessageChannel channel = msg.getChannel();
 		
 		if (args.length <= 0) {
-			channel.sendMessage(":pancakes: **Invalid Arguments:** You must specify a message's ID.").queue();
+			channel.sendMessage(":pancakes: **Invalid Arguments:** You must specify a message's ID or a message link.").queue();
 			return;
 		} 
 		
 		Matcher match = linkPattern.matcher(args[0]);
 		if (match.matches()) {
-			BotMain.getJdaInstance().getGuildById(match.group("guild")).getTextChannelById(match.group("channel")).getMessageById(match.group("messageid")).queue(m -> {
-				if (m == null) {
-					channel.sendMessage(":pancakes: **Invalid Argument:** There is no message at the specified link, or I can't access that message.").queue();
-					return;
-				}
+			
+			Guild guild = BotMain.getJdaInstance().getGuildById(match.group("guild"));
+			if (guild == null) {
+				channel.sendMessage(":pancakes: **Invalid Argument:** I cannot access this message: Not in the same guild as the message.").queue();
+				return;
+			}
+			TextChannel starMsgChannel = guild.getTextChannelById(match.group("channel"));
+			if (starMsgChannel == null) {
+				channel.sendMessage(":pancakes: **Invalid Argument:** I cannot access this message: Cannot access channel with the message.").queue();
+				return;
+			}
+			
+			starMsgChannel.getMessageById(match.group("messageid")).queue(m -> {
 				if (starredMessages.containsKey(m.getIdLong())) {
 					channel.sendMessage(":pancakes: **Invalid Argument:** That message is already starred and in <#" + starChannel.getId() + ">.").queue();
 					return;
 				}
 				
 				m.addReaction("\u2B50").complete();
+				channel.sendMessage(":pancakes: Successfully forcefully pinned the message from `" + MessageUtils.nameAndDiscrim(m.getAuthor()) + "` into <#" + starChannel.getId() + ">.").queue();
 				sendStarredMessage(m);
+			}, th -> {
+				//if errors
+				channel.sendMessage(":pancakes: **Invalid Argument:** I cannot access this message: There is no message at the specified link, or I can't access that message.").queue();
 			});
 			return;
 		}
 		
 		channel.getMessageById(args[0]).queue(m -> {
-			if (m == null) {	//no message with that ID in the channel
-				channel.sendMessage(":pancakes: **Invalid Argument:** There is no message with the ID `" + args[0] 
-						+ "` in this text channel. (This command must be ran in the same channel as the message.)").queue();
-				return;
-			}
 			if (starredMessages.containsKey(m.getIdLong())) {
 				channel.sendMessage(":pancakes: **Invalid Argument:** That message is already starred and in <#" + starChannel.getId() + ">.").queue();
 				return;
 			}
 			
 			m.addReaction("\u2B50").complete();
+			channel.sendMessage(":pancakes: Successfully forcefully pinned the message from `" + MessageUtils.nameAndDiscrim(m.getAuthor()) + "` into <#" + starChannel.getId() + ">.").queue();
 			sendStarredMessage(m);
+		}, th -> {
+			//if errors
+			channel.sendMessage(":pancakes: **Invalid Argument:** There is no message with the ID `" + args[0] 
+					+ "` in this text channel. Try using a link instead of the id?").queue();
 		});
 		return;
 	}

@@ -41,15 +41,17 @@ public class MessageListener extends ListenerAdapter {
 	private void handleStarredReaction(GenericGuildMessageReactionEvent e) {
 		if (e.getReactionEmote().getName().equals("\u2B50")) { //star emote added
 			CmdStar starCmd = (CmdStar) BotMain.getCommandHandler().getCommandByName("star");
-			if (starCmd.starChannel.equals(e.getChannel())) { return; }
+//			if (starCmd.starChannel.equals(e.getChannel())) { return; }
 			
 			if (CmdStar.starredMessages.containsKey(e.getMessageIdLong())) {
 				starCmd.editStarredMessage(e.getMessageIdLong());
 			} else {
 				int count = 1;
 				try {
-					count = e.getReaction().getCount();
-				} catch (Exception ee) {}
+					count = e.getReaction().getUsers().complete().size();
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				}
 				
 				if (count >= BotMain.getBotSettings().getCmdStarRequiredStars()) {
 					e.getChannel().getMessageById(e.getMessageId()).queue(m -> {
