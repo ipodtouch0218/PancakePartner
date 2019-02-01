@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.regex.Matcher;
@@ -46,15 +47,15 @@ public class CmdStar extends BotCommand {
 
 	//--//
 	@Override
-	public void execute(Message msg, String alias, String[] args) {
+	public void execute(Message msg, String alias, ArrayList<String> args, ArrayList<String> flags) {
 		MessageChannel channel = msg.getChannel();
 		
-		if (args.length <= 0) {
+		if (args.size() <= 0) {
 			channel.sendMessage(":pancakes: **Invalid Arguments:** You must specify a message's ID or a message link.").queue();
 			return;
 		} 
 		
-		Matcher match = linkPattern.matcher(args[0]);
+		Matcher match = linkPattern.matcher(args.get(0));
 		if (match.matches()) {
 			
 			Guild guild = BotMain.getJdaInstance().getGuildById(match.group("guild"));
@@ -84,7 +85,7 @@ public class CmdStar extends BotCommand {
 			return;
 		}
 		
-		channel.getMessageById(args[0]).queue(m -> {
+		channel.getMessageById(args.get(0)).queue(m -> {
 			if (starredMessages.containsKey(m.getIdLong())) {
 				channel.sendMessage(":pancakes: **Invalid Argument:** That message is already starred and in <#" + starChannel.getId() + ">.").queue();
 				return;
@@ -95,7 +96,7 @@ public class CmdStar extends BotCommand {
 			sendStarredMessage(m);
 		}, th -> {
 			//if errors
-			channel.sendMessage(":pancakes: **Invalid Argument:** There is no message with the ID `" + args[0] 
+			channel.sendMessage(":pancakes: **Invalid Argument:** There is no message with the ID `" + args.get(0) 
 					+ "` in this text channel. Try using a link instead of the id?").queue();
 		});
 		return;

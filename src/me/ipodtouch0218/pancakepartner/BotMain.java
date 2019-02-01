@@ -19,6 +19,11 @@ import net.dv8tion.jda.core.entities.Game;
 
 public class BotMain {
 
+	/* ----TODO----
+	 * > Create a way to display flags in the help command
+	 */
+	
+	
 	///STATIC STUFF
 	//--Main Method--//
 	

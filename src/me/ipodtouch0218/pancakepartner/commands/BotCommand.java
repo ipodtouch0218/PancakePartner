@@ -1,5 +1,7 @@
 package me.ipodtouch0218.pancakepartner.commands;
 
+import java.util.ArrayList;
+
 import me.ipodtouch0218.pancakepartner.handlers.CommandHandler;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Message;
@@ -7,15 +9,15 @@ import net.dv8tion.jda.core.entities.Message;
 public abstract class BotCommand {
 
 	//--Variables & Constructor--//
-	private String name;			//Command name. Used to run the command itself, [prefix][name]
-	private String[] aliases;		//The command can also be ran through these names. Command names take priority over aliases (if there's overlap)
-	private Permission permission;	//Permission the user needs to use this command.
+	private String name; //Command name. Used to run the command itself, [prefix][name]
+	private String[] aliases; //The command can also be ran through these names. Command names take priority over aliases (if there's overlap)
+	private Permission permission; //Permission the user needs to use this command.
 	
-	private String usage;			//Command usage, <> = required parameters, [] = optional parameters 
-	private String description;		//Command description, used in outputting the help page.
+	private String usage; //Command usage, <> = required parameters, [] = optional parameters 
+	private String description; //Command description, used in outputting the help page.
 	
-	private boolean useInGuilds;	//Command can be used within Guilds
-	private boolean useInDMs;		//Command can be used within DMs
+	private boolean useInGuilds; //Command can be used within Guilds
+	private boolean useInDMs; //Command can be used within DMs
 	
 	public BotCommand(String name, boolean guilds, boolean dms) {
 		this(name, guilds, dms, null);
@@ -31,7 +33,7 @@ public abstract class BotCommand {
 	}
 	
 	//--//
-	public abstract void execute(Message msg, String alias, String[] args);
+	public abstract void execute(Message msg, String alias, ArrayList<String> args, ArrayList<String> flags);
 	
 	public void register(CommandHandler cmdHandler) {
 		cmdHandler.registerCommand(this);

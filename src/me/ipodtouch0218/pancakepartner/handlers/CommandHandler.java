@@ -3,6 +3,7 @@ package me.ipodtouch0218.pancakepartner.handlers;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.regex.Matcher;
 
 import me.ipodtouch0218.pancakepartner.BotMain;
@@ -26,13 +27,17 @@ public class CommandHandler {
 		
 		String prefixRegex = Matcher.quoteReplacement(BotMain.getBotSettings().getCommandPrefix()); //regex to remove the command prefix from start of message
 		String strippedMessage = msg.getContentDisplay().replaceFirst(prefixRegex, "");	//removed the command prefix from the message
-		String[] splitMsg = strippedMessage.split(" ");	
 		
-		BotCommand command = getCommandByName(splitMsg[0]);	//first argument is the command itself.
+		ArrayList<String> args = new ArrayList<>(Arrays.asList(strippedMessage.split(" ")));
+		
+		String cmdName = args.get(0);
+		BotCommand command = getCommandByName(cmdName);	//first argument is the command itself.
 		if (command == null) {	
 			//invalid command, send error and return.
-			BotCommand closest = closestCommand(splitMsg[0]);
-			channel.sendMessage(":pancakes: **Unknown Command:** `" + splitMsg[0] + "`." + (closest!=null ? " Did you mean to type `" + closest.getName() + "`?" : "")).queue();
+			BotCommand closest = closestCommand(cmdName);
+			if (closest == null) { return; }
+			
+			channel.sendMessage(":pancakes: **Unknown Command:** `" + cmdName + "`. Did you mean to type `" + closest.getName() + "`?").queue();
 			return;
 		}
 		if (!command.canExecute(msg)) {
@@ -40,8 +45,6 @@ public class CommandHandler {
 			channel.sendMessage(":pancakes: **Error:** You cannot run this command in a " + (msg.getChannelType() == ChannelType.TEXT ? "Guild" : "DM") + "!").queue();
 			return;
 		}
-		String[] args = MiscUtils.arrayRemoveAndShrink(splitMsg, 0);	//dont pass the command as an argument 
-		
 		if (msg.getChannelType() == ChannelType.TEXT) {	
 			//guild text channel, can check for permissions
 			if (command.getPermission() != null && !msg.getMember().hasPermission(command.getPermission())) {
@@ -51,9 +54,22 @@ public class CommandHandler {
 			}
 		}
 		
+		args.remove(0); //remove the command name from the arguments.
+		ArrayList<String> flags = new ArrayList<>();
+		//populate flag list
+		for (int i = 0; i < args.size(); i++) {
+			String argument = args.get(i);
+			if (argument.startsWith("-")) {
+				flags.add(argument);
+				args.remove(i);
+				i--;
+			}
+		}
+		
+		
 		try {
 			//finally, execute the command.
-			command.execute(msg, splitMsg[0], args);
+			command.execute(msg, cmdName, args, flags);
 			
 			if (BotMain.getBotSettings().getDeleteIssuedCommand()) {
 				msg.delete().queue();

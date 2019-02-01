@@ -25,26 +25,26 @@ public class CmdHelp extends BotCommand {
 
 	//--//
 	@Override
-	public void execute(Message msg, String alias, String[] args) {
+	public void execute(Message msg, String alias, ArrayList<String> args, ArrayList<String> flags) {
 		MessageChannel channel = msg.getChannel();
 		User sender = msg.getAuthor();
 		
-		if (args.length <= 0) {		//no parameters set, default to first help page.
+		if (args.size() <= 0) { //no parameters set, default to first help page.
 			outputPagedCommandList(channel, 0, sender);
 			return;
 		}
-		if (args.length >= 1) {		//one parameter set, either a page # or a command
-			if (MiscUtils.isInteger(args[0])) {
+		if (args.size() >= 1) { //one parameter set, either a page # or a command
+			if (MiscUtils.isInteger(args.get(0))) {
 				//this is a page number, show the next set of commands.
-				int pageNumber = Integer.parseInt(args[0]);
+				int pageNumber = Integer.parseInt(args.get(0));
 				outputPagedCommandList(channel, pageNumber, sender);
 				return;
 			}
 			//not a page number, it's a subpage.
 			
-			BotCommand command = BotMain.getCommandHandler().getCommandByName(args[0]);
+			BotCommand command = BotMain.getCommandHandler().getCommandByName(args.get(0));
 			if (command == null) {
-				channel.sendMessage(":pancakes: **Invalid Argument:** `" + args[0] + "` is not a valid command.").queue();
+				channel.sendMessage(":pancakes: **Invalid Argument:** `" + args.get(0) + "` is not a valid command.").queue();
 				return;
 			}
 			
