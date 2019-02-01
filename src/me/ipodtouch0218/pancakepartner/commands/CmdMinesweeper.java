@@ -70,32 +70,25 @@ public class CmdMinesweeper extends BotCommand {
 	}
 	
 	private String generateMinesweeperBoard(int width, int height, int mines) {
-		HashSet<Integer[]> minePositions = new HashSet<>();
 		char[][] board = new char[width][height];
 		while (mines > 0) {
 			int newx = rand.nextInt(width);
 			int newy = rand.nextInt(height);
-			if (board[newx][newy] == 0) {
+			if (board[newx][newy] != 'X') {
 				board[newx][newy] = 'X';
-				minePositions.add(new Integer[]{newx,newy});
 				mines--;
-			}
-		}
-		
-		for (Integer[] position : minePositions) {
-			int x = position[0];
-			int y = position[1];
-			
-			for (int deltax = -1; deltax <= 1; deltax++) {
-				for (int deltay = -1; deltay <= 1; deltay++) {
-					if (deltax == 0 && deltay == 0) { continue; }
-					int neighborx = x+deltax;
-					if (neighborx < 0 || neighborx >= width) { continue; }
-					int neighbory = y+deltay;
-					if (neighbory < 0 || neighbory >= height) { continue; }
-					if (board[neighborx][neighbory] == 'X') { continue; }
-					
-					board[neighborx][neighbory] += 1;
+				
+				for (int deltax = -1; deltax <= 1; deltax++) {
+					for (int deltay = -1; deltay <= 1; deltay++) {
+						if (deltax == 0 && deltay == 0) { continue; }
+						int neighborx = newx+deltax;
+						if (neighborx < 0 || neighborx >= width) { continue; }
+						int neighbory = newy+deltay;
+						if (neighbory < 0 || neighbory >= height) { continue; }
+						if (board[neighborx][neighbory] == 'X') { continue; }
+						
+						board[neighborx][neighbory] += 1;
+					}
 				}
 			}
 		}
