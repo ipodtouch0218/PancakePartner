@@ -4,15 +4,15 @@ public class BotSettings {
 
 	//---Settings---//
 	//General bot settings
-	private String token = "n/a";								//Bot token used for logging into discord without using email/password
-	private String botPlayingMessage = "Use ;help for help~";	//Bot game message, used as a short message displayed in the user profile
+	private String token = "n/a"; //Bot token used for logging into discord without using email/password
+	private String botPlayingMessage = "Use ;help for help~"; //Bot game message, used as a short message displayed in the user profile
 	
 	//Command Settings
-	private boolean deleteIssuedCommand = false;				//If a command issued by a user should be deleted automatically
-	private String commandPrefix = ";";							//Prefix a message must start with to be considered to be a command.
+	private boolean deleteIssuedCommand = false; //If a command issued by a user should be deleted automatically
+	private String commandPrefix = ";"; //Prefix a message must start with to be considered to be a command.
 	//Command-specfic Settings
-	private String starChannelName = "pins";					//Channel name where starred messages should get reposted.
-	private int starRequiredStars = 3;							//Number of required star reactions before messages get reposted to the star channel.
+	private String starChannelName = "pins"; //Channel name where starred messages should get reposted.
+	private int starRequiredStars = 3; //Number of required star reactions before messages get reposted to the star channel.
 	
 	//---Getters---//
 	public String getToken() { return token; }

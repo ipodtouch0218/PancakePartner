@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 
 import me.ipodtouch0218.pancakepartner.commands.CmdHelp;
+import me.ipodtouch0218.pancakepartner.commands.CmdMinesweeper;
 import me.ipodtouch0218.pancakepartner.commands.CmdPing;
 import me.ipodtouch0218.pancakepartner.commands.CmdStar;
 import me.ipodtouch0218.pancakepartner.handlers.CommandHandler;
@@ -64,6 +65,7 @@ public class BotMain {
 	private void registerCommands() {
 		new CmdPing().register(commandHandler);
 		new CmdHelp().register(commandHandler);
+		new CmdMinesweeper().register(commandHandler);
 		
 		//TODO: rewrite star command to handle multiple guilds.
 		new CmdStar(jdaInstance.getGuilds().get(0).getTextChannelsByName(settings.getCmdStarChannelName(), true).get(0)).register(commandHandler);
