@@ -11,7 +11,7 @@ public class CmdMinesweeper extends BotCommand {
 	
 	public CmdMinesweeper() {
 		super("minesweeper", true, true);
-		setHelpInfo("Creates a playable game of minesweeper! (X's are mines, max ", "minesweeper [[width] [height]] [mines]");
+		setHelpInfo("Creates a playable game of minesweeper! (X's are mines, max 15x15)", "minesweeper [[width] [height]] [mines]");
 		setAliases("mines");
 	}
 
