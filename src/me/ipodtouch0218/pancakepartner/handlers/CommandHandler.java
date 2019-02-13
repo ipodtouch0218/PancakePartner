@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.regex.Matcher;
 
 import me.ipodtouch0218.pancakepartner.BotMain;
+import me.ipodtouch0218.pancakepartner.GuildSettings;
 import me.ipodtouch0218.pancakepartner.commands.BotCommand;
 import me.ipodtouch0218.pancakepartner.utils.MiscUtils;
 import net.dv8tion.jda.core.entities.ChannelType;
@@ -22,11 +23,16 @@ public class CommandHandler {
 	
 	//--Command Execution--//
 	public void executeCommand(Message msg, User sender) {
-		if (!isCommand(msg)) { return; }	//not a command, but somehow got passed as one? huh.
+		if (!isCommand(msg)) { return; } //not a command, but somehow got passed as one? huh.
+		
+		String prefix = ";"; //TODO: make a default prefix setting 
+		if (msg.getChannelType() == ChannelType.TEXT) {
+			prefix = BotMain.getGuildSettings(msg.getGuild()).getCommandPrefix();
+		}
 		MessageChannel channel = msg.getChannel();
 		
-		String prefixRegex = Matcher.quoteReplacement(BotMain.getBotSettings().getCommandPrefix()); //regex to remove the command prefix from start of message
-		String strippedMessage = msg.getContentDisplay().replaceFirst(prefixRegex, "");	//removed the command prefix from the message
+		String prefixRegex = Matcher.quoteReplacement(prefix); //regex to remove the command prefix from start of message
+		String strippedMessage = msg.getContentRaw().replaceFirst(prefixRegex, "");	//removed the command prefix from the message
 		
 		ArrayList<String> args = new ArrayList<>(Arrays.asList(strippedMessage.split(" ")));
 		
@@ -47,7 +53,7 @@ public class CommandHandler {
 		}
 		if (msg.getChannelType() == ChannelType.TEXT) {	
 			//guild text channel, can check for permissions
-			if (command.getPermission() != null && !msg.getMember().hasPermission(command.getPermission())) {
+			if (command.getPermission() != null && !msg.getMember().hasPermission(command.getPermission()) && !BotMain.getGuildSettings(msg.getGuild()).isBotAdmin(sender.getIdLong())) {
 				//sender doesn't have permission, deny usage.
 				channel.sendMessage(":pancakes: **Error:** You must have the `" + command.getPermission().name() + "` permission to use this command!").queue();
 				return;
@@ -84,7 +90,11 @@ public class CommandHandler {
 	
 	//--Misc Functions--//
 	public static boolean isCommand(Message msg) {
-		return msg.getContentDisplay().startsWith(BotMain.getBotSettings().getCommandPrefix());
+		String prefix = ";"; //TODO: default prefix
+		if (msg.getChannelType() == ChannelType.TEXT) {
+			prefix = BotMain.getGuildSettings(msg.getGuild()).getCommandPrefix();
+		}
+		return msg.getContentDisplay().startsWith(prefix);
 	}
 	
 	private BotCommand closestCommand(String input) {

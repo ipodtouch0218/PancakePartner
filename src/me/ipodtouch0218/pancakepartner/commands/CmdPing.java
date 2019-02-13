@@ -21,7 +21,7 @@ public class CmdPing extends BotCommand {
 			reply = "... Ping?";
 		}
 		
-		msg.getChannel().sendMessage(":pancakes: **" + reply + "** `" + BotMain.getJdaInstance().getPing() + "ms`").queue();
+		msg.getChannel().sendMessage(":pancakes: **" + reply + "** `" + BotMain.getJDA().getPing() + "ms`").queue();
 		return;
 	}
 

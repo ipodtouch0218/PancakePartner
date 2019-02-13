@@ -1,9 +1,12 @@
 package me.ipodtouch0218.pancakepartner.utils;
 
+import java.util.regex.Pattern;
+
 public class MiscUtils {
 
 	private MiscUtils() {} //disable instances
 	
+	public static final Pattern PATTERN_MESSAGE_LINK = Pattern.compile("(https?:\\/\\/)?(www\\.)?discordapp\\.com\\/channels\\/(?<guild>\\d+)\\/(?<channel>\\d+)\\/(?<messageid>\\d+)");
 	
 	public static String[] arrayRemoveAndShrink(String[] original, int element){
 	    String[] n = new String[original.length - 1];
