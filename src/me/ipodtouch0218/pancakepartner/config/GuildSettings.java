@@ -1,4 +1,4 @@
-package me.ipodtouch0218.pancakepartner;
+package me.ipodtouch0218.pancakepartner.config;
 
 import java.io.File;
 import java.io.IOException;
@@ -6,22 +6,22 @@ import java.util.HashSet;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import me.ipodtouch0218.pancakepartner.BotMain;
+
 public class GuildSettings {
 
-	//--STATIC--//
 	@JsonIgnore
 	private static final File GUILD_FOLDER = new File("guilds/");
 	
-	/////////////////////
-	
+	////////////////
 	//--SETTINGS--//
-	private String commandPrefix = ";";
-	private HashSet<Long> botAdmins = new HashSet<>();
-	//-Star Command-//
-	private long starChannelID = -1;
-	private int starRequiredStars = 3;
 	
-	////////////////////
+	private String commandPrefix = ";"; //Command prefix to be used in place of the default prefix
+	private HashSet<Long> botAdmins = new HashSet<>(); //List of administrators which have permissions to all commands
+
+	private long starChannelID = -1; //channel where starred messages should be pasted.
+	private int starRequiredStars = 3; //required amount of stars before the message gets pinned to the star channel.
+	
 	
 	//--Getters--//
 	public String getCommandPrefix() { return commandPrefix; }
@@ -39,8 +39,7 @@ public class GuildSettings {
 	public boolean addBotAdmin(long id) { return botAdmins.add(id); }
 	public boolean removeBotAdmin(long id) { return botAdmins.remove(id); }
 	
-	///////////////////
-	
+	//////////////////////////
 	//--SAVING AND LOADING--//
 	public void save(long id) {
 		File settingsFile = new File("guilds/" + id + ".yml");
@@ -51,6 +50,7 @@ public class GuildSettings {
 			e.printStackTrace();
 		}
 	}
+	
 	public static GuildSettings load(long id) {
 		File settingsFile = new File("guilds/" + id + ".yml");
 		

@@ -3,13 +3,12 @@ package me.ipodtouch0218.pancakepartner.commands;
 import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.regex.Matcher;
 
 import me.ipodtouch0218.pancakepartner.BotMain;
-import me.ipodtouch0218.pancakepartner.GuildSettings;
+import me.ipodtouch0218.pancakepartner.config.GuildSettings;
 import me.ipodtouch0218.pancakepartner.utils.MessageUtils;
 import me.ipodtouch0218.pancakepartner.utils.MiscUtils;
 import net.dv8tion.jda.core.EmbedBuilder;

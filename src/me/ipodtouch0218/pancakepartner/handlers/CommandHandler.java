@@ -7,7 +7,6 @@ import java.util.Arrays;
 import java.util.regex.Matcher;
 
 import me.ipodtouch0218.pancakepartner.BotMain;
-import me.ipodtouch0218.pancakepartner.GuildSettings;
 import me.ipodtouch0218.pancakepartner.commands.BotCommand;
 import me.ipodtouch0218.pancakepartner.utils.MiscUtils;
 import net.dv8tion.jda.core.entities.ChannelType;

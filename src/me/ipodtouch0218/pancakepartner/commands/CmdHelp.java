@@ -55,6 +55,11 @@ public class CmdHelp extends BotCommand {
 	}
 	
 	private void outputPagedCommandList(Guild guild, MessageChannel channel, int pagenumber, User sender) {
+		String cmdPrefix = BotMain.getBotSettings().getDefaultCommandPrefix();
+		if (guild != null) {
+			cmdPrefix = BotMain.getGuildSettings(guild).getCommandPrefix();
+		}
+		
 		ArrayList<BotCommand> allCmds = BotMain.getCommandHandler().getAllCommands();
 		int maxpages = ((allCmds.size()-1)/cmdsPerPage);
 		if (pagenumber > maxpages) { 
@@ -69,7 +74,7 @@ public class CmdHelp extends BotCommand {
 			BotCommand nextCmd = allCmds.get(i + (pagenumber * cmdsPerPage));
 
 			String title = nextCmd.getName();
-			page.addField(BotMain.getGuildSettings(guild).getCommandPrefix() + title, nextCmd.getDescription(), false);
+			page.addField(cmdPrefix + title, nextCmd.getDescription(), false);
 		}
 		page.setFooter("Requested by " + MessageUtils.nameAndDiscrim(sender), sender.getAvatarUrl()).setTimestamp(Instant.now());
 		
@@ -77,10 +82,15 @@ public class CmdHelp extends BotCommand {
 	}
 	
 	private void outputCommandPage(Guild guild, MessageChannel channel, BotCommand cmd, User sender) {
+		String cmdPrefix = BotMain.getBotSettings().getDefaultCommandPrefix();
+		if (guild != null) {
+			cmdPrefix = BotMain.getGuildSettings(guild).getCommandPrefix();
+		}
+		
 		EmbedBuilder embed = new EmbedBuilder();
 		embed.setTitle(":pancakes: **Command Help:** `" + cmd.getName() + "`");
 		embed.setColor(Color.GREEN);
-		embed.setDescription("*Usage: " + BotMain.getGuildSettings(guild).getCommandPrefix() + cmd.getUsage() + "*");
+		embed.setDescription("*Usage: " + cmdPrefix + cmd.getUsage() + "*");
 		embed.addField("Description", cmd.getDescription(), false);
 		embed.addField("Required Permission", (cmd.getPermission() == null ? "None" : cmd.getPermission().name()), false);
 		

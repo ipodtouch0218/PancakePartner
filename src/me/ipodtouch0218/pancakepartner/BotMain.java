@@ -8,6 +8,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 
 import me.ipodtouch0218.pancakepartner.commands.*;
+import me.ipodtouch0218.pancakepartner.config.BotSettings;
+import me.ipodtouch0218.pancakepartner.config.GuildSettings;
 import me.ipodtouch0218.pancakepartner.handlers.CommandHandler;
 import me.ipodtouch0218.pancakepartner.handlers.MessageListener;
 import net.dv8tion.jda.core.AccountType;
@@ -18,9 +20,14 @@ import net.dv8tion.jda.core.entities.Guild;
 
 public class BotMain {
 
-	/* ----TODO----
-	 * > Create a way to display flags in the help command
-	 * > Guild independence (star command, settings)
+	/*
+	 * TODO:
+	 * Display possible flags in help command.
+	 * Allow flags to take preceeding arguments as their own parameters
+	 * Change starred message notifications to remember their message instead of parsing the notification.
+	 * Comment some more classes:
+	 * - CmdSettings
+	 * - CmdMinesweeper
 	 */
 	
 	
@@ -56,15 +63,14 @@ public class BotMain {
 		
 		//create the bot through jda
 		try {
-			jdaInstance = new JDABuilder(AccountType.BOT)	//bot account, not user account
-				.setToken(botConfig.getToken())			//set the bot token for login
-				.setAudioEnabled(false)						//not a music bot, ignore audio
-				.addEventListener(messageListener)			//initializes messagelistener to the bot
-				.setGame(Game.playing(botConfig.getBotPlayingMessage()))	//bot playing message, showing people usage.
-				.buildBlocking();							//finalizes and builds the bot
+			jdaInstance = new JDABuilder(AccountType.BOT) //bot account, not user account
+				.setToken(botConfig.getToken()) //set the bot token for login
+				.addEventListener(messageListener) //initializes messagelistener to the bot
+				.setGame(Game.playing(botConfig.getBotPlayingMessage())) //bot playing message, showing people usage.
+				.buildBlocking();//finalizes and builds the bot
 		} catch (Exception e) {
-			System.err.println("Unable to start the bot!");	//error! shoot
-			e.printStackTrace();							//print error to the console output
+			System.err.println("Unable to start the bot!"); //error! program terminates from here.
+			e.printStackTrace(); //print error to the console output
 		}
 	}
 	
@@ -76,12 +82,11 @@ public class BotMain {
 		new CmdStar().register(commandHandler);
 	}
 	
-	//--Misc Stuff--//
+	//--Configuration--//
 	private void loadSettings() {
 		if (!configFile.exists()) {
 			botConfig = new BotSettings();
 			saveSettings();
-			//save default values to the file.
 		}
 		try {
 			botConfig = yamlMapper.readValue(configFile, BotSettings.class);

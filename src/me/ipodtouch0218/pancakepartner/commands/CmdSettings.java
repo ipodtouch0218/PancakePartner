@@ -3,7 +3,7 @@ package me.ipodtouch0218.pancakepartner.commands;
 import java.util.ArrayList;
 
 import me.ipodtouch0218.pancakepartner.BotMain;
-import me.ipodtouch0218.pancakepartner.GuildSettings;
+import me.ipodtouch0218.pancakepartner.config.GuildSettings;
 import me.ipodtouch0218.pancakepartner.utils.MessageUtils;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Message;
