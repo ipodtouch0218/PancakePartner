@@ -27,12 +27,7 @@ public class CmdStar extends BotCommand {
 	//--Variables & Constructor--//
 	private static final File saveFile = new File("starredmsgs.yml");
 	private static StarredMessageInfo info;
-	
-	/* TODO:
-	 *   - Support multiple guilds
-	 *   - Get all info from a Guild Settings object
-	 *   - Save all info to Guild-Specific files instead of one starredmsgs.txt
-	 */
+
 	public CmdStar() {
 		super("star", true, false, Permission.MESSAGE_MANAGE);
 		setHelpInfo("Forcefully pins a message to the starred channel for later viewing. Turn on developer mode to be able to copy message IDs for this command's parameters.", "star <message id|url>");

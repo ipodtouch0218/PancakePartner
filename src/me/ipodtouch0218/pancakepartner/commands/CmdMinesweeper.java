@@ -29,10 +29,11 @@ public class CmdMinesweeper extends BotCommand {
 			return;
 		}
 		if (args.size() >= 2) {
-			//board size
+			//board size, 1st and 2nd argument
 			try {
 				boardwidth = Integer.parseInt(args.get(0));
 				boardheight = Integer.parseInt(args.get(1));
+				//set board width and height from the command
 			} catch (NumberFormatException e) {
 				channel.sendMessage(":pancakes: **Invalid Arguments:** Invalid height and width! (not a number?)").queue();
 				return;
@@ -40,8 +41,10 @@ public class CmdMinesweeper extends BotCommand {
 			minecount = (int) (boardwidth*boardheight*0.15625);
 		} 
 		if (args.size() > 2) {
+			//mine count, 3rd argument
 			try {
 				minecount = Integer.parseInt(args.get(2));
+				//set mine count
 			} catch (NumberFormatException e) {
 				channel.sendMessage(":pancakes: **Invalid Arguments:** Invalid mine count! (not a number?)").queue();
 				return;
@@ -49,20 +52,25 @@ public class CmdMinesweeper extends BotCommand {
 		}
 		
 		if (boardwidth > 13 || boardheight > 13 || boardwidth <= 0 || boardheight <= 0) {
+			//board too big or less than 1
 			channel.sendMessage(":pancakes: **Invalid Arguments:** Invalid height and width! (minsize=1, maxsize=13x13)").queue();
 			return;
 		}
 		
 		String info = "*Settings: " + boardwidth + "x" + boardheight + ", " + minecount + " mines.*";
 		if (minecount > boardwidth*boardheight) {
+			//more mines than available spaces
 			channel.sendMessage(":pancakes: **Invalid Arguments:** Invalid mine count! (more mines than board size)").queue();
 			return;
 		} else if (minecount < 0) {
+			//negative amount of mines
 			channel.sendMessage(":pancakes: **Invalid Arguments:** Invalid mine count! (cannot have negative mines!?)").queue();
 			return;
 		} else if (minecount == boardwidth*boardheight) {
+			//mines = available spaces
 			info = "*Only mines? How do you win!?*";
 		} else if (minecount == 0) {
+			//no mines
 			info = "*No mines. What fun.*";
 		}
 		
@@ -72,11 +80,12 @@ public class CmdMinesweeper extends BotCommand {
 	}
 	
 	private String generateMinesweeperBoard(int width, int height, int mines, boolean space) {
-		char[][] board = new char[width][height];
+		char[][] board = new char[width][height]; 
 		while (mines > 0) {
 			int newx = rand.nextInt(width);
 			int newy = rand.nextInt(height);
 			if (board[newx][newy] != 'X') {
+				//blank location for a mine
 				board[newx][newy] = 'X';
 				mines--;
 				
@@ -89,7 +98,7 @@ public class CmdMinesweeper extends BotCommand {
 						if (neighbory < 0 || neighbory >= height) { continue; }
 						if (board[neighborx][neighbory] == 'X') { continue; }
 						
-						board[neighborx][neighbory] += 1;
+						board[neighborx][neighbory] += 1; //set all adjacent spaces +1
 					}
 				}
 			}

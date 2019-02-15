@@ -43,6 +43,7 @@ public class CmdSettings extends BotCommand {
 						}
 						settings.addBotAdmin(user.getIdLong());
 						channel.sendMessage(":pancakes: Added " + MessageUtils.nameAndDiscrim(user) + " as a bot admin!").queue();
+						settings.save(msg.getGuild().getIdLong());
 					} else {
 						channel.sendMessage(":pancakes: **Invalid Arguments** You must mention a user as the next parameter!").queue();
 					}
@@ -57,6 +58,7 @@ public class CmdSettings extends BotCommand {
 						}
 						settings.removeBotAdmin(user.getIdLong());
 						channel.sendMessage(":pancakes: " + MessageUtils.nameAndDiscrim(user) + " is no longer a bot admin!").queue();
+						settings.save(msg.getGuild().getIdLong());
 					} else {
 						channel.sendMessage(":pancakes: **Invalid Arguments** You must mention a user as the next parameter!").queue();
 					}
@@ -89,6 +91,7 @@ public class CmdSettings extends BotCommand {
 				}
 				settings.setCommandPrefix(p);
 				channel.sendMessage(":pancakes: Set `" + p + "` to be the new command prefix!").queue();
+				settings.save(msg.getGuild().getIdLong());
 				return;
 			}
 			channel.sendMessage(":pancakes: `" + settings.getCommandPrefix() + "` is the current command prefix.").queue();
@@ -105,6 +108,8 @@ public class CmdSettings extends BotCommand {
 						TextChannel newchannel = MessageUtils.getMentionedChannel(args.get(2));
 						
 						channel.sendMessage(":pancakes: Set " + MessageUtils.asChannelMention(newchannel) + " to be the starred message channel!").queue();
+						settings.setStarChannelID(newchannel.getIdLong());
+						settings.save(msg.getGuild().getIdLong());
 					} else {
 						channel.sendMessage(":pancakes: **Invalid Arguments** You must mention a text channel as the next parameter!").queue();
 					}
@@ -115,6 +120,7 @@ public class CmdSettings extends BotCommand {
 						int required = Integer.parseInt(args.get(2));
 						settings.setStarRequiredStars(required);
 						channel.sendMessage(":pancakes: Messages now require " + required + " star reactions before they will be starred. (NOTE: This will not remove existing starred messages.").queue();
+						settings.save(msg.getGuild().getIdLong());
 					} catch (Exception e) {
 						channel.sendMessage(":pancakes: **Invalid Arguments:** `" + args.get(2) + "` is not a valid number!").queue();
 					}
