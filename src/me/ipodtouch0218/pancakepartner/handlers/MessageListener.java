@@ -1,14 +1,11 @@
 package me.ipodtouch0218.pancakepartner.handlers;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import me.ipodtouch0218.pancakepartner.BotMain;
 import me.ipodtouch0218.pancakepartner.commands.CmdStar;
 import me.ipodtouch0218.pancakepartner.commands.CmdStar.StarredMessageInfo;
 import me.ipodtouch0218.pancakepartner.config.GuildSettings;
-import me.ipodtouch0218.pancakepartner.utils.MiscUtils;
-import net.dv8tion.jda.core.entities.Guild;
+import me.ipodtouch0218.pancakepartner.utils.MessageInfoContainer;
+import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.User;
@@ -21,6 +18,10 @@ import net.dv8tion.jda.core.events.message.priv.react.PrivateMessageReactionAddE
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
 
 public class MessageListener extends ListenerAdapter {
+	
+
+	private static final String STAR_REACTION = "\u2B50";
+	private static final String REMOVE_REACTION = new String(Character.toChars(0x1F6AB));
 	
 	//---Event Handling---//
 	@Override
@@ -41,14 +42,15 @@ public class MessageListener extends ListenerAdapter {
 	public void onGuildMessageReactionAdd(GuildMessageReactionAddEvent e) {
 		handleStarredReaction(e);
 	}
-	
 	@Override
 	public void onGuildMessageReactionRemove(GuildMessageReactionRemoveEvent e) {
 		handleStarredReaction(e);
 	}
 	
 	private void handleStarredReaction(GenericGuildMessageReactionEvent e) {
-		if (e.getReactionEmote().getName().equals("\u2B50")) { //star emote added
+		if (e.getReactionEmote().getName().equals(STAR_REACTION)) { //star emote added
+			if (e.getChannel().getType() != ChannelType.TEXT) { return; }
+			
 			StarredMessageInfo starinfo = CmdStar.getStarredMessageInfo();
 			GuildSettings guildSettings = BotMain.getGuildSettings(e.getGuild());
 			TextChannel starChannel = BotMain.getJDA().getTextChannelById(guildSettings.getStarChannelID());
@@ -59,7 +61,7 @@ public class MessageListener extends ListenerAdapter {
 			
 			if (starinfo.isMessageStarred(e.getMessageIdLong())) {
 				e.getChannel().getMessageById(e.getMessageId()).queue(m -> {
-					CmdStar.editStarredMessage(m, starChannel);
+					CmdStar.editStarredMessage(m);
 				});
 			} else {
 				int count = 1;
@@ -87,39 +89,27 @@ public class MessageListener extends ListenerAdapter {
 		}
 	}
 	
-	private static final Pattern idPattern = Pattern.compile("\\d+");
-//	private static final Pattern 
 	@Override
 	public void onPrivateMessageReactionAdd(PrivateMessageReactionAddEvent e) {
 		if (e.getUser().equals(e.getJDA().getSelfUser())) { return; }
-		if (e.getReactionEmote().getName().equals(new String(Character.toChars(0x1F6AB)))) {
+		if (e.getReactionEmote().getName().equals(REMOVE_REACTION)) {
 			e.getChannel().getMessageById(e.getMessageIdLong()).queue(m -> {
-				if (!m.getContentDisplay().startsWith(":star: **Starred Message Notification:** Your starred message (ID:")) { return; }
-				
-				Matcher linkMatcher = MiscUtils.PATTERN_MESSAGE_LINK.matcher(m.getContentDisplay());
-				linkMatcher.find();
-				if (!linkMatcher.matches()) {
-					//malformed message
+				StarredMessageInfo info = CmdStar.getStarredMessageInfo();
+				if (!info.isNotificationMessage(e.getMessageIdLong())) {
 					return;
 				}
-				Guild guild = BotMain.getJDA().getGuildById(linkMatcher.group("guild"));
-				GuildSettings guildSettings = BotMain.getGuildSettings(guild);
-				TextChannel starChannel = BotMain.getJDA().getTextChannelById(guildSettings.getStarChannelID());
-				
-				Matcher matcher = idPattern.matcher(m.getContentDisplay());
-				matcher.find();
-				long id = Long.parseLong(matcher.group());
-				if (CmdStar.getStarredMessageInfo().isMessageIgnored(id)) {
-					return;
-				}
-				
-				long toDeleteID = CmdStar.getStarredMessageInfo().getStarredMessages().get(id);
-				starChannel.deleteMessageById(toDeleteID).queue();
-				CmdStar.getStarredMessageInfo().getStarredMessages().remove(id);
-				CmdStar.getStarredMessageInfo().getIgnoredMessages().add(id);
+				MessageInfoContainer starredMsg = info.getMessageFromNotification(e.getMessageIdLong());
+				MessageInfoContainer toDelete = info.getStarredMessages().get(starredMsg.getMessageId());
+				toDelete.getMessage(BotMain.getJDA()).queue(toDeleteMessage -> {
+					toDeleteMessage.delete().queue();
+				});
+				info.getStarredMessages().remove(starredMsg.getMessageId());
+				info.getNotificationMessages().remove(e.getMessageIdLong());
+				info.getIgnoredMessages().add(starredMsg.getMessageId());
 				CmdStar.saveStarredMessages();
 				
-				m.editMessage(":star: **Star Message Notification:** Successfully removed your message with ID \"" + id + "\" as a starred message.").queue();
+				m.editMessage(":star: **Star Message Notification:** Successfully removed your message with ID `" 
+						+ starredMsg.getMessageId() + "` as a starred message.").queue();
 			});
 		}
 	}

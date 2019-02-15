@@ -24,7 +24,7 @@ public class CommandHandler {
 	public void executeCommand(Message msg, User sender) {
 		if (!isCommand(msg)) { return; } //not a command, but somehow got passed as one? huh.
 		
-		String prefix = ";"; //TODO: make a default prefix setting 
+		String prefix = BotMain.getBotSettings().getDefaultCommandPrefix();
 		if (msg.getChannelType() == ChannelType.TEXT) {
 			prefix = BotMain.getGuildSettings(msg.getGuild()).getCommandPrefix();
 		}
@@ -53,7 +53,6 @@ public class CommandHandler {
 		if (msg.getChannelType() == ChannelType.TEXT) {	
 			//guild text channel, can check for permissions
 			if (command.getPermission() != null && !msg.getMember().hasPermission(command.getPermission()) && !BotMain.getGuildSettings(msg.getGuild()).isBotAdmin(sender.getIdLong())) {
-				//sender doesn't have permission, deny usage.
 				channel.sendMessage(":pancakes: **Error:** You must have the `" + command.getPermission().name() + "` permission to use this command!").queue();
 				return;
 			}

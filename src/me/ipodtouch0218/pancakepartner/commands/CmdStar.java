@@ -9,6 +9,7 @@ import java.util.regex.Matcher;
 
 import me.ipodtouch0218.pancakepartner.BotMain;
 import me.ipodtouch0218.pancakepartner.config.GuildSettings;
+import me.ipodtouch0218.pancakepartner.utils.MessageInfoContainer;
 import me.ipodtouch0218.pancakepartner.utils.MessageUtils;
 import me.ipodtouch0218.pancakepartner.utils.MiscUtils;
 import net.dv8tion.jda.core.EmbedBuilder;
@@ -43,6 +44,11 @@ public class CmdStar extends BotCommand {
 	public void execute(Message msg, String alias, ArrayList<String> args, ArrayList<String> flags) {
 		MessageChannel channel = msg.getChannel();
 		GuildSettings guildSettings = BotMain.getGuildSettings(msg.getGuild());
+		
+		if (guildSettings.getStarChannelID() == -1) {
+			channel.sendMessage(":pancakes: **Error:** The star channel is not set! Use 'settings star channel #<channel>' to set the channel for this guild!").queue();
+			return;
+		}
 		TextChannel starChannel = BotMain.getJDA().getTextChannelById(guildSettings.getStarChannelID());
 		
 		if (args.size() <= 0) {
@@ -106,23 +112,20 @@ public class CmdStar extends BotCommand {
 	}
 	
 	//--Sending starred message to channel--//
-	public static void sendStarredMessage(Message msg, TextChannel channel) {
-		MessageEmbed embed = buildStarredMessageEmbed(msg);
+	public static void sendStarredMessage(Message originalMsg, TextChannel channel) {
+		MessageEmbed embed = buildStarredMessageEmbed(originalMsg);
 		
 		channel.sendMessage(embed).queue(m -> {
-			info.starredMessages.put(msg.getIdLong(), m.getIdLong());
+			info.starredMessages.put(originalMsg.getIdLong(), new MessageInfoContainer(m));
 			saveStarredMessages();
 		});
-		sendNotificationMessage(msg);
+		sendNotificationMessage(originalMsg);
 	}
 	
-	public static void editStarredMessage(Message sourceMsg, TextChannel channel) {
+	public static void editStarredMessage(Message sourceMsg) {
 		MessageEmbed embed = buildStarredMessageEmbed(sourceMsg);
-		channel.getMessageById(
-				info.
-				starredMessages.get(
-						sourceMsg
-						.getIdLong())).queue(editmsg -> {
+		
+		info.starredMessages.get(sourceMsg.getIdLong()).getMessage(BotMain.getJDA()).queue(editmsg -> {
 			editmsg.editMessage(embed).queue();
 			saveStarredMessages();
 		});
@@ -168,6 +171,8 @@ public class CmdStar extends BotCommand {
 					+ "click the :no_entry_sign: reaction under this mesasge to remove it.")
 			.queue(m -> {
 				m.addReaction(new String(Character.toChars(0x1F6AB))).queue();
+				info.notificationMessages.put(m.getIdLong(), new MessageInfoContainer(msg));
+				saveStarredMessages();
 			});
 		});
 	}
@@ -200,14 +205,17 @@ public class CmdStar extends BotCommand {
 	
 	//--Info Class--//
 	public static class StarredMessageInfo {
-		private HashMap<Long, Long> starredMessages = new HashMap<>();
+		private HashMap<Long, MessageInfoContainer> starredMessages = new HashMap<>();
 		private ArrayList<Long> ignoredMessages = new ArrayList<>();
+		private HashMap<Long, MessageInfoContainer> notificationMessages = new HashMap<>();
 		
-		public HashMap<Long, Long> getStarredMessages() { return starredMessages; }
+		public HashMap<Long, MessageInfoContainer> getStarredMessages() { return starredMessages; }
 		public ArrayList<Long> getIgnoredMessages() { return ignoredMessages; }
+		public HashMap<Long, MessageInfoContainer> getNotificationMessages() { return notificationMessages; }
 		
 		public boolean isMessageIgnored(long id) { return ignoredMessages.contains(id); }
 		public boolean isMessageStarred(long id) { return starredMessages.containsKey(id); }
+		public MessageInfoContainer getMessageFromNotification(long id) { return notificationMessages.get(id); }
+		public boolean isNotificationMessage(long id) { return notificationMessages.containsKey(id); }
 	}
-	
 }

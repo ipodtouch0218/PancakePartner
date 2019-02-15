@@ -2,21 +2,30 @@ package me.ipodtouch0218.pancakepartner;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 
-import me.ipodtouch0218.pancakepartner.commands.*;
+import me.ipodtouch0218.pancakepartner.commands.BotCommand;
+import me.ipodtouch0218.pancakepartner.commands.CmdHelp;
+import me.ipodtouch0218.pancakepartner.commands.CmdMinesweeper;
+import me.ipodtouch0218.pancakepartner.commands.CmdPing;
+import me.ipodtouch0218.pancakepartner.commands.CmdSettings;
+import me.ipodtouch0218.pancakepartner.commands.CmdStar;
 import me.ipodtouch0218.pancakepartner.config.BotSettings;
 import me.ipodtouch0218.pancakepartner.config.GuildSettings;
 import me.ipodtouch0218.pancakepartner.handlers.CommandHandler;
 import me.ipodtouch0218.pancakepartner.handlers.MessageListener;
+import me.ipodtouch0218.pancakepartner.utils.MessageInfoContainer;
+import me.ipodtouch0218.pancakepartner.utils.MessageUtils;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDABuilder;
 import net.dv8tion.jda.core.entities.Game;
 import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.Message;
 
 public class BotMain {
 
@@ -25,14 +34,15 @@ public class BotMain {
 	 * Display possible flags in help command.
 	 * Allow flags to take preceeding arguments as their own parameters
 	 * Change starred message notifications to remember their message instead of parsing the notification.
+	 * Standardize comment format (headers and sections specfically)
+	 * Clean up utils (in general)
 	 * Comment some more classes:
 	 * - CmdSettings
 	 * - CmdMinesweeper
+	 * - MessageListener
 	 */
 	
-	
-	///STATIC STUFF
-	//--Main Method--//
+	//PROGRAM START
 	
 	public static void main(String[] args) {
 		new BotMain();
@@ -67,7 +77,7 @@ public class BotMain {
 				.setToken(botConfig.getToken()) //set the bot token for login
 				.addEventListener(messageListener) //initializes messagelistener to the bot
 				.setGame(Game.playing(botConfig.getBotPlayingMessage())) //bot playing message, showing people usage.
-				.buildBlocking();//finalizes and builds the bot
+				.buildBlocking(); //finalizes and builds the bot on the same thread
 		} catch (Exception e) {
 			System.err.println("Unable to start the bot!"); //error! program terminates from here.
 			e.printStackTrace(); //print error to the console output
@@ -80,6 +90,20 @@ public class BotMain {
 		new CmdHelp().register(commandHandler);
 		new CmdMinesweeper().register(commandHandler);
 		new CmdStar().register(commandHandler);
+		
+		new BotCommand("templink", true, false) {
+
+			@Override
+			public void execute(Message msg, String alias, ArrayList<String> args, ArrayList<String> flags) {
+				
+				MessageInfoContainer originalMessage = MessageUtils.parseMessageURL(args.get(0));
+				MessageInfoContainer starMessage = MessageUtils.parseMessageURL(args.get(1));
+				
+				CmdStar.getStarredMessageInfo().getStarredMessages().put(originalMessage.getMessageId(), starMessage);
+				CmdStar.saveStarredMessages();
+			}
+			
+		}.register(commandHandler);
 	}
 	
 	//--Configuration--//

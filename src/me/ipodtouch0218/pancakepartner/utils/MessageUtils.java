@@ -14,8 +14,6 @@ public class MessageUtils {
 
 	private MessageUtils() {} 	//stops instance creation, static methods only.
 	
-	
-	
 	//--Mention Utils (@ping)--//
 	private static final Pattern mentionUserPattern = Pattern.compile("<@\\d+>");
 	private static final Pattern mentionChannelPattern = Pattern.compile("<#\\d+>");
@@ -55,7 +53,7 @@ public class MessageUtils {
 			return null;
 		}
 		if (!containsUserMention(str)) {
-			//given string is not a mention, abort! jump ship!
+			//given string is not a mention
 			return null;
 		}
 		
@@ -80,11 +78,11 @@ public class MessageUtils {
 	
 	public static TextChannel getMentionedChannel(String str) {
 		if (BotMain.getJDA() == null) {
-			//not yet connected to dsicord, we can't get any users.
+			//not yet connected to dsicord, we can't get any channels.
 			return null;
 		}
 		if (!isChannelMention(str)) {
-			//given string is not a mention, abort! jump ship!
+			//given string is not a mention
 			return null;
 		}
 		
@@ -100,7 +98,10 @@ public class MessageUtils {
 	}
 	
 	public static String getMessageURL(Message m) {
-		long guildId = m.getGuild().getIdLong();
+		String guildId = "@me";
+		if (m.getGuild() != null) {
+			guildId = m.getGuild().getId();
+		}
 		long channelId = m.getChannel().getIdLong();
 		long messageId = m.getIdLong();
 		
@@ -109,5 +110,18 @@ public class MessageUtils {
 
 	public static String asChannelMention(MessageChannel channel) {
 		return "<#" + channel.getId() + ">";
+	}
+	
+	//--stuff--//
+	public static MessageInfoContainer parseMessageURL(String url) {
+		Matcher m = MiscUtils.PATTERN_MESSAGE_LINK.matcher(url);
+		m.find();
+		long guildid = -1;
+		if (!m.group("guild").equalsIgnoreCase("@me")) {
+			guildid = Long.parseLong(m.group("guild"));
+		}
+		long channelid = Long.parseLong(m.group("channel"));
+		long messageid = Long.parseLong(m.group("messageid"));
+		return new MessageInfoContainer(guildid, channelid, messageid);
 	}
 }

@@ -22,7 +22,7 @@ public class MiscUtils {
 	
 	//---Levenshtein Distance---//
 	public static int calcLevenshteinDistance(String x, String y) {
-		//uhhh dont' ask i just copy-pasted
+		//don't ask i just copy-pasted
 	    int[][] dp = new int[x.length() + 1][y.length() + 1];
 	 
 	    for (int i = 0; i <= x.length(); i++) {
@@ -35,7 +35,7 @@ public class MiscUtils {
 	            }
 	            else {
 	                dp[i][j] = Math.min(dp[i - 1][j - 1] 
-	                + costOfSubstitution(x.charAt(i - 1), y.charAt(j - 1)), 
+	                + (x.charAt(i-1) == y.charAt(j-1) ? 0 : 1), 
 	                  Math.min(dp[i - 1][j] + 1, 
 	                  dp[i][j - 1] + 1));
 	            }
@@ -44,7 +44,4 @@ public class MiscUtils {
 	 
 	    return dp[x.length()][y.length()];
 	}
-    public static int costOfSubstitution(char a, char b) {
-        return a == b ? 0 : 1;
-    }
 }
