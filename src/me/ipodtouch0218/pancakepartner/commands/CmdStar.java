@@ -75,7 +75,6 @@ public class CmdStar extends BotCommand {
 					return;
 				}
 				
-				m.addReaction("\u2B50").complete();
 				channel.sendMessage(":pancakes: Successfully forcefully pinned the message from `" + MessageUtils.nameAndDiscrim(m.getAuthor()) + "` into <#" + starChannel.getId() + ">.").queue();
 				sendStarredMessage(m, starChannel);
 			}, th -> {
@@ -95,7 +94,6 @@ public class CmdStar extends BotCommand {
 				return;
 			}
 			
-			m.addReaction("\u2B50").complete();
 			channel.sendMessage(":pancakes: Successfully forcefully pinned the message from `" + MessageUtils.nameAndDiscrim(m.getAuthor()) + "` into <#" + starChannel.getId() + ">.").queue();
 			sendStarredMessage(m, starChannel);
 		}, th -> {

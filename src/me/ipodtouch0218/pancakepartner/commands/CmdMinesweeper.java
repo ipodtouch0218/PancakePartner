@@ -5,6 +5,7 @@ import java.util.Random;
 
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.MessageChannel;
+import net.dv8tion.jda.core.utils.tuple.Pair;
 
 public class CmdMinesweeper extends BotCommand {
 
@@ -13,7 +14,7 @@ public class CmdMinesweeper extends BotCommand {
 	
 	public CmdMinesweeper() {
 		super("minesweeper", true, true);
-		setHelpInfo("Creates a playable game of minesweeper! Use the \"-mobile\" flag within the command for easier viewing on mobile. (X's are mines, max 13x13)", "minesweeper [[width] [height]] [mines]");
+		setHelpInfo("Creates a playable game of minesweeper! FLAGS: \"-mobile\" and \"hint\". (X's are mines, max 13x13)", "minesweeper [[width] [height]] [mines]");
 		setAliases("mine", "mines");
 	}
 
@@ -74,12 +75,34 @@ public class CmdMinesweeper extends BotCommand {
 			info = "*No mines. What fun.*";
 		}
 		
+		boolean outputHint = flags.contains("-hint");
 		
-		String output = generateMinesweeperBoard(boardwidth, boardheight, minecount, flags.contains("-mobile"));
-		channel.sendMessage(":pancakes: **PancakeGames: Minesweeper** " + info + "\n" + output).queue();
+		char[][] board = generateMinesweeperBoard(boardwidth, boardheight, minecount, outputHint);
+		String hint = "";
+		if (outputHint) {
+			//
+			if (hintX == -1 || hintY == -1) {
+				hint = " HINT: There are no blank tiles! (good luck)";
+			} else {
+				hint = " HINT: (" + (hintX+1) + ", " + (hintY+1) + ") is blank!";
+			}
+		}
+		channel.sendMessage(":pancakes: **PancakeGames: Minesweeper** " + info + hint + "\n" + outputBoard(board, flags.contains("-mobile"), flags.contains("-coords"))).queue();
 	}
 	
-	private String generateMinesweeperBoard(int width, int height, int mines, boolean space) {
+	private int hintX, hintY;
+	
+	private char[][] generateMinesweeperBoard(int width, int height, int mines, boolean setHint) {
+		
+		ArrayList<Pair<Integer,Integer>> blankTiles = new ArrayList<>();
+		if (setHint) {
+			for (int x = 0; x < width; x++) {
+				for (int y = 0; y < height; y++) {
+					blankTiles.add(Pair.of(x,y));
+				}
+			}
+		}
+		
 		char[][] board = new char[width][height]; 
 		while (mines > 0) {
 			int newx = rand.nextInt(width);
@@ -91,10 +114,13 @@ public class CmdMinesweeper extends BotCommand {
 				
 				for (int deltax = -1; deltax <= 1; deltax++) {
 					for (int deltay = -1; deltay <= 1; deltay++) {
-						if (deltax == 0 && deltay == 0) { continue; }
 						int neighborx = newx+deltax;
-						if (neighborx < 0 || neighborx >= width) { continue; }
 						int neighbory = newy+deltay;
+						
+						blankTiles.remove(Pair.of(neighborx, neighbory));
+						
+						if (deltax == 0 && deltay == 0) { continue; }
+						if (neighborx < 0 || neighborx >= width) { continue; }
 						if (neighbory < 0 || neighbory >= height) { continue; }
 						if (board[neighborx][neighbory] == 'X') { continue; }
 						
@@ -104,9 +130,38 @@ public class CmdMinesweeper extends BotCommand {
 			}
 		}
 		
+		if (setHint) {
+			if (blankTiles.isEmpty()) {
+				hintX = -1;
+				hintY = -1;
+			} else {
+				Pair<Integer,Integer> rand = blankTiles.get((int) (Math.random()*blankTiles.size()));
+				hintX = rand.getLeft();
+				hintY = rand.getRight();
+			}
+		}
+		return board;
+	}
+	
+	private String outputBoard(char[][] board, boolean space, boolean grid) {
 		StringBuilder output = new StringBuilder();
-		for (int y = 0; y < height; y++) {
-			for (int x = 0; x < width; x++) {
+		if (grid) {
+			output.append("    ");
+			for (int x = 0; x < board.length; x++) {
+				output.append(Character.toChars(9351 + (x+1)));
+				if (space) {
+					output.append(" ");
+				} else {
+					output.append("\u2009");
+				}
+			}
+			output.append("\n");
+		}
+		for (int y = 0; y < board[0].length; y++) {
+			if (grid) {
+				output.append(Character.toChars(9351 + (y+1)));
+			}
+			for (int x = 0; x < board.length; x++) {
 				output.append("||");
 				char value = board[x][y];
 				if (value == 'X') {

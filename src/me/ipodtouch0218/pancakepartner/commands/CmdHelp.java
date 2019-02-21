@@ -74,7 +74,7 @@ public class CmdHelp extends BotCommand {
 			BotCommand nextCmd = allCmds.get(i + (pagenumber * cmdsPerPage));
 
 			String title = nextCmd.getName();
-			page.addField(cmdPrefix + title, nextCmd.getDescription(), false);
+			page.addField(cmdPrefix + title, nextCmd.getDescription(), true);
 		}
 		page.setFooter("Requested by " + MessageUtils.nameAndDiscrim(sender), sender.getAvatarUrl()).setTimestamp(Instant.now());
 		
