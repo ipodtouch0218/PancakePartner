@@ -3,7 +3,6 @@ package me.ipodtouch0218.pancakepartner;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.Scanner;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
@@ -18,7 +17,6 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDABuilder;
 import net.dv8tion.jda.core.entities.Game;
 import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.TextChannel;
 
 public class BotMain {
 
@@ -54,20 +52,6 @@ public class BotMain {
 		loadSettings();
 		buildBot();
 		registerCommands();
-		
-		new Thread(()-> {
-			Scanner s = new Scanner(System.in);
-			while(true) {
-				String line = s.nextLine();
-				if (line.equals("forceexit")) {
-					break;
-				}
-				String[] stuff = line.split(";");
-				TextChannel channel = jdaInstance.getTextChannelById(stuff[0]);
-				channel.sendMessage(stuff[1]).queue();
-			}
-			s.close();
-		}).start();
 	}
 	
 	//--Startup Methods--//

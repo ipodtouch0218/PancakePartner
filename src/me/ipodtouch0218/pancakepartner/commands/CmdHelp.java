@@ -28,10 +28,22 @@ public class CmdHelp extends BotCommand {
 	@Override
 	public void execute(Message msg, String alias, ArrayList<String> args, ArrayList<String> flags) {
 		MessageChannel channel = msg.getChannel();
+		boolean dm = flags.contains("-dm");
 		User sender = msg.getAuthor();
+		if (dm) {
+			try {
+				channel = sender.openPrivateChannel().complete();
+			} catch (Exception e) {
+				channel.sendMessage(":pancakes: **Error:** Unable to open a DM with you! Maybe you have DM's closed to server members?").queue();
+				return;
+			}
+		}
 		
 		if (args.size() <= 0) { //no parameters set, default to first help page.
 			outputPagedCommandList(msg.getGuild(), channel, 0, sender);
+			if (dm) {
+				msg.getChannel().sendMessage(":pancakes: Sent you a DM containing help info!").queue();
+			}
 			return;
 		}
 		if (args.size() >= 1) { //one parameter set, either a page # or a command
@@ -50,6 +62,9 @@ public class CmdHelp extends BotCommand {
 			}
 			
 			outputCommandPage(msg.getGuild(), channel, command, sender);
+			if (dm) {
+				msg.getChannel().sendMessage(":pancakes: Sent you a DM containing help info!").queue();
+			}
 		}
 		return;
 	}
@@ -67,7 +82,7 @@ public class CmdHelp extends BotCommand {
 		}
 		
 		EmbedBuilder page = new EmbedBuilder();
-		page.setTitle(":pancakes: **Command List:** `(Page " + (pagenumber+1) + "/" + (maxpages+1) + ")`");
+		page.setTitle(":pancakes: **" + (guild != null ? guild.getName() + " " : "") + "Command List:** `(Page " + (pagenumber+1) + "/" + (maxpages+1) + ")`");
 		page.setColor(Color.GREEN);
 		for (int i = 0; i < cmdsPerPage; i++) {
 			if (i + (pagenumber * cmdsPerPage) >= allCmds.size()) { break; }
