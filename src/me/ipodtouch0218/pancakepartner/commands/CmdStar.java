@@ -9,18 +9,15 @@ import java.util.regex.Matcher;
 
 import me.ipodtouch0218.pancakepartner.BotMain;
 import me.ipodtouch0218.pancakepartner.config.GuildSettings;
+import me.ipodtouch0218.pancakepartner.handlers.ReactionHandler;
 import me.ipodtouch0218.pancakepartner.utils.MessageInfoContainer;
 import me.ipodtouch0218.pancakepartner.utils.MessageUtils;
 import me.ipodtouch0218.pancakepartner.utils.MiscUtils;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.Permission;
-import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.Message;
+import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.entities.Message.Attachment;
-import net.dv8tion.jda.core.entities.MessageChannel;
-import net.dv8tion.jda.core.entities.MessageEmbed;
-import net.dv8tion.jda.core.entities.MessageReaction;
-import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.core.events.message.react.GenericMessageReactionEvent;
 
 public class CmdStar extends BotCommand {
 	
@@ -142,12 +139,12 @@ public class CmdStar extends BotCommand {
 		embed.setTimestamp(m.getCreationTime());
 		if (!m.getAttachments().isEmpty()) {
 			for (Attachment attachment : m.getAttachments()) {
-				if (attachment.isImage()) {
-					if (m.getContentDisplay().equals("") || m.getContentDisplay() == null) {
+				if (attachment.isImage() || attachment.getFileName().matches(".+\\.(mov|mp4)")) {
+//					if (m.getContentDisplay().equals("") || m.getContentDisplay() == null) {
 						embed.setImage(attachment.getUrl());
-					} else {
-						embed.setThumbnail(attachment.getUrl());
-					}
+//					} else {
+//						embed.setThumbnail(attachment.getUrl());
+//					}
 					break;
 				}
 			}
@@ -161,9 +158,9 @@ public class CmdStar extends BotCommand {
 		msg.getAuthor().openPrivateChannel().queue(ch -> {
 			ch.sendMessage(":star: **Starred Message Notification:** Your starred message (ID: " + msg.getId() + ") has been starred within \"" + msg.getGuild().getName() 
 					+ "\". ```" + msg.getContentDisplay() + "``` Message Link: " + MessageUtils.getMessageURL(msg) + "\nIf you do not want this message to be starred," 
-					+ "click the :no_entry_sign: reaction under this mesasge to remove it.")
+					+ "click the :no_entry: reaction under this mesasge to remove it.")
 			.queue(m -> {
-				m.addReaction(new String(Character.toChars(0x1F6AB))).queue();
+				m.addReaction("\u26D4").queue();
 				info.notificationMessages.put(m.getIdLong(), new MessageInfoContainer(msg));
 				saveStarredMessages();
 			});
@@ -210,5 +207,15 @@ public class CmdStar extends BotCommand {
 		public boolean isMessageStarred(long id) { return starredMessages.containsKey(id); }
 		public MessageInfoContainer getMessageFromNotification(long id) { return notificationMessages.get(id); }
 		public boolean isNotificationMessage(long id) { return notificationMessages.containsKey(id); }
+	}
+	
+	public class NotificationHandler extends ReactionHandler {
+		
+		@Override
+		public void handleReaction(GenericMessageReactionEvent e, boolean isOwner) {
+			// TODO Auto-generated method stub
+			
+		}
+		
 	}
 }

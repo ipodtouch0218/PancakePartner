@@ -19,6 +19,13 @@ public class MiscUtils {
 		return string.matches("[-+]?\\d+");
 	}
 	
+	public static int[] createArrayRange(int start, int end) {
+		int[] result = new int[end-start];
+		for (int i = start; i < end; i++) {
+			result[i-start] = i;
+		}
+		return result;
+	}
 	
 	//---Levenshtein Distance---//
 	public static int calcLevenshteinDistance(String x, String y) {

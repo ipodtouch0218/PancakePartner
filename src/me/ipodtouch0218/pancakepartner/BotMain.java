@@ -22,10 +22,12 @@ public class BotMain {
 
 	/* TODO:
 	 * Display possible flags in help command.
-	 * Allow flags to take preceeding arguments as their own parameters
+	 * Allow flags to take later arguments as their own parameters
 	 * Change starred message notifications to remember their message instead of parsing the notification.
 	 * Standardize comment format (headers and sections specfically)
 	 * Clean up utils (in general)
+	 * Possible idea: reaction-based message listeners? Maybe a list of listeners and abstract classes?
+	 * 
 	 * Comment some more classes:
 	 * - CmdSettings
 	 * - MessageListener
@@ -79,6 +81,7 @@ public class BotMain {
 		new CmdHelp().register(commandHandler);
 		new CmdMinesweeper().register(commandHandler);
 		new CmdStar().register(commandHandler);
+		new CmdRoll().register(commandHandler);
 	}
 	
 	//--Configuration--//
