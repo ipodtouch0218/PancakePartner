@@ -62,6 +62,10 @@ public class CmdRoll extends BotCommand {
 			
 			if (allowDuplicates) {
 				for (int i = 0 ; i < rollCount; i++) {
+					if (results.length() > 1900) {
+						error = "*(Warning: Ran out of space to place results. " + (rollCount - rollsTaken) + " roll(s) were not performed.)*";
+						break;
+					}
 					if (!results.equals("")) { results += ","; }
 					rollsTaken++;
 					results += (RAND.nextInt(sides)+1);
@@ -74,6 +78,9 @@ public class CmdRoll extends BotCommand {
 				for (int i = 0; i < rollCount; i++) {
 					if (randElements.isEmpty()) {
 						error = "*(Warning: Ran out of possible results. " + (rollCount - rollsTaken) + " roll(s) were not performed.)*"; 
+						break;
+					} else if (results.length() > 1900) {
+						error = "*(Warning: Ran out of space to place results. " + (rollCount - rollsTaken) + " roll(s) were not performed.)*";
 						break;
 					}
 					if (!results.equals("")) { results += ","; }
@@ -96,6 +103,9 @@ public class CmdRoll extends BotCommand {
 			for (int i = 0; i < rollCount; i++) {
 				if (randElements.isEmpty()) {
 					error = "*(Warning: Ran out of possible results. " + (rollCount - rollsTaken) + " roll(s) were not performed.)*"; 
+					break;
+				} else if (results.length() > 1900) {
+					error = "*(Warning: Ran out of space to place results. " + (rollCount - rollsTaken) + " roll(s) were not performed.)*";
 					break;
 				}
 				if (!results.equals("")) { results += ","; }
