@@ -139,7 +139,8 @@ public class CmdStar extends BotCommand {
 		embed.setTimestamp(m.getCreationTime());
 		if (!m.getAttachments().isEmpty()) {
 			for (Attachment attachment : m.getAttachments()) {
-				if (attachment.isImage() || attachment.getFileName().matches(".+\\.(mov|mp4)")) {
+				//TODO: fix video embeds
+				if (attachment.isImage() || attachment.getUrl().matches(".+\\.(mov|mp4)")) {
 //					if (m.getContentDisplay().equals("") || m.getContentDisplay() == null) {
 						embed.setImage(attachment.getUrl());
 //					} else {
@@ -164,6 +165,9 @@ public class CmdStar extends BotCommand {
 				info.notificationMessages.put(m.getIdLong(), new MessageInfoContainer(msg));
 				saveStarredMessages();
 			});
+		}, e -> {
+			msg.getChannel().sendMessage(":star: **Starred Message Notification:** <@" + msg.getAuthor().getId() + ">, your message at " + MessageUtils.getMessageURL(msg) 
+					+ " was starred, however I can't open a dm with you, so I couldn't send you a notification there.").queue();
 		});
 	}
 	

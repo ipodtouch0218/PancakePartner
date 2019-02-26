@@ -87,7 +87,7 @@ public class MessageListener extends ListenerAdapter {
 			});
 		} else {
 			e.getReaction().getUsers().queue(u -> {
-				int count = u.size();
+				int count = u.size() + 1;
 				if (count > guildSettings.getStarRequiredStars()) {
 					e.getChannel().getMessageById(messageId).queue(m -> {
 						CmdStar.sendStarredMessage(m, starChannel);
