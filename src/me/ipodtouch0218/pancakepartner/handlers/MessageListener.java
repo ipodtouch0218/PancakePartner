@@ -3,8 +3,8 @@ package me.ipodtouch0218.pancakepartner.handlers;
 import java.util.HashMap;
 
 import me.ipodtouch0218.pancakepartner.BotMain;
-import me.ipodtouch0218.pancakepartner.commands.CmdStar;
-import me.ipodtouch0218.pancakepartner.commands.CmdStar.StarredMessageInfo;
+import me.ipodtouch0218.pancakepartner.commands.custom.CmdStar;
+import me.ipodtouch0218.pancakepartner.commands.custom.CmdStar.StarredMessageInfo;
 import me.ipodtouch0218.pancakepartner.config.GuildSettings;
 import me.ipodtouch0218.pancakepartner.utils.MessageInfoContainer;
 import net.dv8tion.jda.core.entities.ChannelType;

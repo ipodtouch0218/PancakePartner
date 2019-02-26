@@ -1,8 +1,10 @@
-package me.ipodtouch0218.pancakepartner.commands;
+package me.ipodtouch0218.pancakepartner.commands.custom;
 
 import java.util.ArrayList;
 
 import me.ipodtouch0218.pancakepartner.BotMain;
+import me.ipodtouch0218.pancakepartner.commands.BotCommand;
+import me.ipodtouch0218.pancakepartner.commands.CommandFlag;
 import me.ipodtouch0218.pancakepartner.config.GuildSettings;
 import me.ipodtouch0218.pancakepartner.utils.MessageUtils;
 import net.dv8tion.jda.core.Permission;
@@ -19,7 +21,7 @@ public class CmdSettings extends BotCommand {
 	}
 
 	@Override
-	public void execute(Message msg, String alias, ArrayList<String> args, ArrayList<String> flags) {
+	public void execute(Message msg, String alias, ArrayList<String> args, ArrayList<CommandFlag> flags) {
 		MessageChannel channel = msg.getChannel();
 		GuildSettings settings = BotMain.getGuildSettings(msg.getGuild());
 		
@@ -142,6 +144,4 @@ public class CmdSettings extends BotCommand {
 		}
 		}
 	}
-	
-
 }

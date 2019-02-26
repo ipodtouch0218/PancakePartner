@@ -1,9 +1,11 @@
-package me.ipodtouch0218.pancakepartner.commands;
+package me.ipodtouch0218.pancakepartner.commands.custom;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
 
+import me.ipodtouch0218.pancakepartner.commands.BotCommand;
+import me.ipodtouch0218.pancakepartner.commands.CommandFlag;
 import me.ipodtouch0218.pancakepartner.utils.MiscUtils;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.MessageChannel;
@@ -16,10 +18,12 @@ public class CmdRoll extends BotCommand {
 		super("roll", true, true);
 		setHelpInfo("Rolls a virtual dice or chooses an option from a list. Flags: -noduplicates", "roll <#|[item1,item2]> [# of rolls]");
 		setAliases("random");
+		
+		registerFlag("noduplicates", 0);
 	}
 
 	@Override
-	public void execute(Message msg, String alias, ArrayList<String> args, ArrayList<String> flags) {
+	public void execute(Message msg, String alias, ArrayList<String> args, ArrayList<CommandFlag> flags) {
 		MessageChannel channel = msg.getChannel();
 		if (args.size() <= 0) {
 			channel.sendMessage(":pancakes: **Invalid Arguments:** You must specify either a list or dice to roll!").queue();
@@ -27,7 +31,7 @@ public class CmdRoll extends BotCommand {
 		}
 		
 		int rollCount = 1;
-		boolean allowDuplicates = !flags.contains("-noduplicates");
+		boolean allowDuplicates = !containsFlag("noduplicates", flags);
 		
 		if (args.size() >= 2) {
 			try {
@@ -65,10 +69,24 @@ public class CmdRoll extends BotCommand {
 				return;
 			}
 			
-			for (int numb : MiscUtils.createArrayRange(1,sides+1)) {
-				randElements.add(numb);
+			if (allowDuplicates) {
+				
+				for (int i = 0; i < rollCount; i++) {
+					int nextElement = RAND.nextInt(sides);
+					if ((results + nextElement).length() > 1750) {
+						error = "*(Warning: Ran out of space to place results. " + (rollCount - rollsTaken) + " roll(s) were not performed.)*";
+						break;
+					}
+					if (!results.equals("")) { results += ","; }
+					results += nextElement;
+					rollsTaken++;
+				}
+				
+			} else {
+				for (int numb : MiscUtils.createArrayRange(1,sides+1)) {
+					randElements.add(numb);
+				}
 			}
-			
 		} else if (rollParams.matches("\\[(.+,?)*\\]")) {
 			String cleansedParams = rollParams.substring(1, rollParams.length()-1);
 			String[] splitParams = cleansedParams.split(",");
@@ -79,21 +97,26 @@ public class CmdRoll extends BotCommand {
 			return;
 		}
 		
-		for (int i = 0; i < rollCount; i++) {
-			if (randElements.isEmpty()) {
-				error = "*(Warning: Ran out of possible results. " + (rollCount - rollsTaken) + " roll(s) were not performed.)*"; 
-				break;
-			} else if (results.length() > 1750) {
-				error = "*(Warning: Ran out of space to place results. " + (rollCount - rollsTaken) + " roll(s) were not performed.)*";
-				break;
-			}
-			if (!results.equals("")) { results += ","; }
-			int randIndex = RAND.nextInt(randElements.size());
-			rollsTaken++;
-			results += (randElements.get(randIndex));
-			
-			if (!allowDuplicates) {
-				randElements.remove(randIndex);
+		if (!randElements.isEmpty()) {
+			for (int i = 0; i < rollCount; i++) {
+				if (randElements.isEmpty()) {
+					error = "*(Warning: Ran out of possible results. " + (rollCount - rollsTaken) + " roll(s) were not performed.)*"; 
+					break;
+				}
+				int randIndex = RAND.nextInt(randElements.size());
+				Object nextElement = randElements.get(randIndex);
+				
+				if ((results + nextElement).length() > 1750) {
+					error = "*(Warning: Ran out of space to place results. " + (rollCount - rollsTaken) + " roll(s) were not performed.)*";
+					break;
+				}
+				if (!results.equals("")) { results += ","; }
+				rollsTaken++;
+				results += (nextElement);
+				
+				if (!allowDuplicates) {
+					randElements.remove(randIndex);
+				}
 			}
 		}
 		

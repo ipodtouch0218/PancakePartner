@@ -1,4 +1,4 @@
-package me.ipodtouch0218.pancakepartner.commands;
+package me.ipodtouch0218.pancakepartner.commands.custom;
 
 import java.awt.Color;
 import java.time.Instant;
@@ -6,8 +6,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import me.ipodtouch0218.pancakepartner.BotMain;
-//import me.ipodtouch0218.pancakepartner.handlers.MessageListener;
-import me.ipodtouch0218.pancakepartner.handlers.ReactionHandler;
+import me.ipodtouch0218.pancakepartner.commands.BotCommand;
+import me.ipodtouch0218.pancakepartner.commands.CommandFlag;
 import me.ipodtouch0218.pancakepartner.utils.MessageUtils;
 import me.ipodtouch0218.pancakepartner.utils.MiscUtils;
 import net.dv8tion.jda.core.EmbedBuilder;
@@ -15,7 +15,6 @@ import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.entities.User;
-import net.dv8tion.jda.core.events.message.react.GenericMessageReactionEvent;
 
 public class CmdHelp extends BotCommand {
 
@@ -25,13 +24,14 @@ public class CmdHelp extends BotCommand {
 	public CmdHelp() {
 		super("help", true, true);
 		setHelpInfo("Provides either a list of commands or command-specific usage info.", "help [#|command]");
+		registerFlag("dm", 0);
 	}
 
 	//--//
 	@Override
-	public void execute(Message msg, String alias, ArrayList<String> args, ArrayList<String> flags) {
+	public void execute(Message msg, String alias, ArrayList<String> args, ArrayList<CommandFlag> flags) {
 		MessageChannel channel = msg.getChannel();
-		boolean dm = flags.contains("-dm");
+		boolean dm = containsFlag("dm", flags);
 		User sender = msg.getAuthor();
 		if (dm) {
 			try {
@@ -45,7 +45,6 @@ public class CmdHelp extends BotCommand {
 		int pageNumber = 0;
 		if (args.size() >= 1) {
 			if (MiscUtils.isInteger(args.get(0))) {
-				//this is a page number, show the next set of commands.
 				pageNumber = Integer.parseInt(args.get(0));
 			} else {
 				BotCommand command = BotMain.getCommandHandler().getCommandByName(args.get(0));
@@ -70,7 +69,6 @@ public class CmdHelp extends BotCommand {
 		if (pagenumber > maxpages) { 
 			pagenumber = maxpages;
 		}
-//		int finalpagenumber = pagenumber;
 		
 		EmbedBuilder page = new EmbedBuilder();
 		page.setTitle(":pancakes: **Command List:** `(Page " + (pagenumber+1) + "/" + (maxpages+1) + ")`");
@@ -84,16 +82,7 @@ public class CmdHelp extends BotCommand {
 		}
 		page.setFooter("Requested by " + MessageUtils.nameAndDiscrim(sender), sender.getAvatarUrl()).setTimestamp(Instant.now());
 		
-//		if (override != null) {
-//			override.editMessage(page.build()).queue();
-//			return;
-//		}
-		channel.sendMessage(page.build()).queue(m -> {
-//			HelpPageHandler newHandler = new HelpPageHandler(finalpagenumber, maxpages);
-//			newHandler.setOwnerId(sender.getIdLong());
-//			MessageListener.addReactionHandler(m.getIdLong(), newHandler);
-//			ReactionHandler.setReactions(m, "\u25C0", "\u25B6");
-		});
+		channel.sendMessage(page.build()).queue();
 	}
 	
 	private static void outputCommandPage(Guild guild, MessageChannel channel, BotCommand cmd, User sender) {
@@ -115,36 +104,5 @@ public class CmdHelp extends BotCommand {
 		embed.setFooter("Requested by " + MessageUtils.nameAndDiscrim(sender), sender.getAvatarUrl()).setTimestamp(Instant.now());
 		
 		channel.sendMessage(embed.build()).queue();
-	}
-	
-	//----other----//
-	public static class HelpPageHandler extends ReactionHandler {
-		
-		private int page;
-		private int maxPage;
-		public HelpPageHandler(int startingPage, int maxPage) {
-			this.page = startingPage;
-			this.maxPage = maxPage;
-		}
-		
-		public void handleReaction(GenericMessageReactionEvent e, boolean isOwner) {
-			if (!isOwner) { return; }
-			switch (e.getReactionEmote().getName()) {
-			case "\u25C0": 
-				page -= 1;
-				break;
-			case "\u25B6": 
-				page += 1;
-				break;
-			}
-			
-			page = Math.max(0, Math.min(page, maxPage));
-			
-			e.getChannel().getMessageById(e.getMessageIdLong()).queue(m -> {
-				outputPagedCommandList(e.getChannel(), page, e.getUser(), m);
-				clearOwnerReactions(m);
-			});
-		}
-		
 	}
 }

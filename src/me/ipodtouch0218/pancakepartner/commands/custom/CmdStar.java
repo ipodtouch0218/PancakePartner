@@ -1,4 +1,4 @@
-package me.ipodtouch0218.pancakepartner.commands;
+package me.ipodtouch0218.pancakepartner.commands.custom;
 
 import java.awt.Color;
 import java.io.File;
@@ -8,6 +8,8 @@ import java.util.HashMap;
 import java.util.regex.Matcher;
 
 import me.ipodtouch0218.pancakepartner.BotMain;
+import me.ipodtouch0218.pancakepartner.commands.BotCommand;
+import me.ipodtouch0218.pancakepartner.commands.CommandFlag;
 import me.ipodtouch0218.pancakepartner.config.GuildSettings;
 import me.ipodtouch0218.pancakepartner.handlers.ReactionHandler;
 import me.ipodtouch0218.pancakepartner.utils.MessageInfoContainer;
@@ -33,7 +35,7 @@ public class CmdStar extends BotCommand {
 
 	//--//
 	@Override
-	public void execute(Message msg, String alias, ArrayList<String> args, ArrayList<String> flags) {
+	public void execute(Message msg, String alias, ArrayList<String> args, ArrayList<CommandFlag> flags) {
 		MessageChannel channel = msg.getChannel();
 		GuildSettings guildSettings = BotMain.getGuildSettings(msg.getGuild());
 		

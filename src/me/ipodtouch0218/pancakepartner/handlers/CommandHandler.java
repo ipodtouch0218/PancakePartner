@@ -3,11 +3,13 @@ package me.ipodtouch0218.pancakepartner.handlers;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Iterator;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import me.ipodtouch0218.pancakepartner.BotMain;
 import me.ipodtouch0218.pancakepartner.commands.BotCommand;
+import me.ipodtouch0218.pancakepartner.commands.CommandFlag;
 import me.ipodtouch0218.pancakepartner.utils.MiscUtils;
 import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.entities.Message;
@@ -16,6 +18,8 @@ import net.dv8tion.jda.core.entities.User;
 
 public class CommandHandler {
 
+	private static final Pattern ARGS_WITH_QUOTES = Pattern.compile("[^\\s\"']+|\"([^\"]*)\"|'([^']*)'");
+	
 	///INSTANCE STUFFS
 	//--Variables & Constructor--//
 	private ArrayList<BotCommand> commands = new ArrayList<>(); //list of all registered commands
@@ -33,7 +37,17 @@ public class CommandHandler {
 		String prefixRegex = Matcher.quoteReplacement(prefix); //regex to remove the command prefix from start of message
 		String strippedMessage = msg.getContentRaw().replaceFirst(prefixRegex, "");	//removed the command prefix from the message
 		
-		ArrayList<String> args = new ArrayList<>(Arrays.asList(strippedMessage.split(" ")));
+		ArrayList<String> args = new ArrayList<>();
+		
+		Matcher matcher = ARGS_WITH_QUOTES.matcher(strippedMessage);
+		while (matcher.find()) {
+			String match = matcher.group();
+			if (match.matches("\"([^\"]*)\"|'([^']*)'")) {
+				//remove the initial quotes.
+				match = match.substring(1, match.length()-1);
+			}
+			args.add(match);
+		}
 		
 		String cmdName = args.get(0);
 		BotCommand command = getCommandByName(cmdName);	//first argument is the command itself.
@@ -59,17 +73,34 @@ public class CommandHandler {
 		}
 		
 		args.remove(0); //remove the command name from the arguments.
-		ArrayList<String> flags = new ArrayList<>();
+		ArrayList<CommandFlag> flags = new ArrayList<>();
 		//populate flag list
-		for (int i = 0; i < args.size(); i++) {
-			String argument = args.get(i);
-			if (argument.startsWith("-")) {
-				flags.add(argument);
-				args.remove(i);
-				i--;
+		Iterator<String> it = args.iterator();
+		while (it.hasNext()) {
+			String argument = it.next();
+			if (!argument.matches("-[^\\d].*")) { continue; }
+			String dashRemoved = argument.substring(1, argument.length());
+			if (!command.isFlagRegistered(dashRemoved)) { continue; }
+			//this argument is a flag, remove it from args and retrieve parameters
+			int parametercount = command.getFlags().get(dashRemoved);
+			it.remove();
+			
+			String[] parameters = new String[parametercount];
+			for (int i = 0; i < parametercount; i++) {
+				if (!it.hasNext()) {
+					//no parameters left for this flag? err....
+					channel.sendMessage(":pancakes: **Command Parse Error:** Ran out of parameters for the `" + argument + "` flag (" + parametercount + " required).").queue();
+					return;
+				}
+				String nextArg = it.next();
+				parameters[i] = nextArg;
+				it.remove();
 			}
+			flags.add(new CommandFlag(dashRemoved, parameters));
 		}
 		
+		System.out.println(args);
+		System.out.println(flags);
 		
 		try {
 			//finally, execute the command.

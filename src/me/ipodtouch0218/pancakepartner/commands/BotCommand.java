@@ -1,6 +1,7 @@
 package me.ipodtouch0218.pancakepartner.commands;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import me.ipodtouch0218.pancakepartner.handlers.CommandHandler;
 import net.dv8tion.jda.core.Permission;
@@ -15,6 +16,8 @@ public abstract class BotCommand {
 	
 	private String usage; //Command usage, <> = required parameters, [] = optional parameters 
 	private String description; //Command description, used in outputting the help page.
+	
+	private HashMap<String,Integer> registeredFlags = new HashMap<>(); //List of all flags. Flags must be registered before they will be parsed as flags.
 	
 	private boolean useInGuilds; //Command can be used within Guilds
 	private boolean useInDMs; //Command can be used within DMs
@@ -33,7 +36,7 @@ public abstract class BotCommand {
 	}
 	
 	//--//
-	public abstract void execute(Message msg, String alias, ArrayList<String> args, ArrayList<String> flags);
+	public abstract void execute(Message msg, String alias, ArrayList<String> args, ArrayList<CommandFlag> flags);
 	
 	public void register(CommandHandler cmdHandler) {
 		cmdHandler.registerCommand(this);
@@ -50,13 +53,18 @@ public abstract class BotCommand {
 	public void setAliases(String... alises) {
 		this.aliases = alises;
 	}
+	public void registerFlag(String tag, int parameters) {
+		registeredFlags.put(tag,parameters);
+	}
 	
 	//--Getters--//
 	public String getName() { return name; }
 	public String[] getAliases() { return aliases; }
 	public String getUsage() { return usage; }
 	public String getDescription() { return description; }
+	public boolean isFlagRegistered(String tag) { return registeredFlags.containsKey(tag); }
 	public Permission getPermission() { return permission; }
+	public HashMap<String,Integer> getFlags() { return registeredFlags; }
 	
 	public boolean canExecute(Message msg) {
 		switch (msg.getChannelType()) {
@@ -66,6 +74,14 @@ public abstract class BotCommand {
 		case TEXT: { return useInGuilds; }
 		default: { return false; }
 		}
-		
+	}
+	
+	//--Misc?--//
+	//TODO: find something better than this...
+	public static boolean containsFlag(String tag, ArrayList<CommandFlag> flags) {
+		for (CommandFlag flag : flags) {
+			if (flag.getTag().equalsIgnoreCase(tag)) { return true; }
+		}
+		return false;
 	}
 }

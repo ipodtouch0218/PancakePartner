@@ -1,8 +1,10 @@
-package me.ipodtouch0218.pancakepartner.commands;
+package me.ipodtouch0218.pancakepartner.commands.custom;
 
 import java.util.ArrayList;
 
 import me.ipodtouch0218.pancakepartner.BotMain;
+import me.ipodtouch0218.pancakepartner.commands.BotCommand;
+import me.ipodtouch0218.pancakepartner.commands.CommandFlag;
 import net.dv8tion.jda.core.entities.Message;
 
 public class CmdPing extends BotCommand {
@@ -15,7 +17,7 @@ public class CmdPing extends BotCommand {
 	
 	//--//
 	@Override
-	public void execute(Message msg, String alias, ArrayList<String> arguments, ArrayList<String> flags) {
+	public void execute(Message msg, String alias, ArrayList<String> arguments, ArrayList<CommandFlag> flags) {
 		String reply = "Pong~!";
 		if (alias.equalsIgnoreCase("pong")) {
 			reply = "... Ping?";
