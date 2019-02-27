@@ -1,6 +1,7 @@
 package me.ipodtouch0218.pancakepartner.commands.custom;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Random;
 
 import me.ipodtouch0218.pancakepartner.commands.BotCommand;
@@ -25,7 +26,7 @@ public class CmdMinesweeper extends BotCommand {
 	}
 
 	@Override
-	public void execute(Message msg, String alias, ArrayList<String> args, ArrayList<CommandFlag> flags) {
+	public void execute(Message msg, String alias, ArrayList<String> args, HashMap<String,CommandFlag> flags) {
 		MessageChannel channel = msg.getChannel();
 		int boardwidth = 8;
 		int boardheight = 8;
@@ -81,19 +82,18 @@ public class CmdMinesweeper extends BotCommand {
 			info = "*No mines. What fun.*";
 		}
 		
-		boolean outputHint = containsFlag("hint", flags);
+		boolean outputHint = flags.containsKey("hint");
 		
 		char[][] board = generateMinesweeperBoard(boardwidth, boardheight, minecount, outputHint);
 		String hint = "";
 		if (outputHint) {
-			//
 			if (hintX == -1 || hintY == -1) {
 				hint = " HINT: There are no blank tiles! (good luck)";
 			} else {
 				hint = " HINT: (" + (hintX+1) + ", " + (hintY+1) + ") is blank!";
 			}
 		}
-		channel.sendMessage(":pancakes: **PancakeGames: Minesweeper** " + info + hint + "\n" + outputBoard(board, containsFlag("mobile", flags), containsFlag("coords", flags))).queue();
+		channel.sendMessage(":pancakes: **PancakeGames: Minesweeper** " + info + hint + "\n" + outputBoard(board, flags.containsKey("mobile"), flags.containsKey("coords"))).queue();
 	}
 	
 	private int hintX, hintY;

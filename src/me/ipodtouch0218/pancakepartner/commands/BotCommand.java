@@ -36,7 +36,7 @@ public abstract class BotCommand {
 	}
 	
 	//--//
-	public abstract void execute(Message msg, String alias, ArrayList<String> args, ArrayList<CommandFlag> flags);
+	public abstract void execute(Message msg, String alias, ArrayList<String> args, HashMap<String,CommandFlag> flags);
 	
 	public void register(CommandHandler cmdHandler) {
 		cmdHandler.registerCommand(this);
@@ -74,14 +74,5 @@ public abstract class BotCommand {
 		case TEXT: { return useInGuilds; }
 		default: { return false; }
 		}
-	}
-	
-	//--Misc?--//
-	//TODO: find something better than this...
-	public static boolean containsFlag(String tag, ArrayList<CommandFlag> flags) {
-		for (CommandFlag flag : flags) {
-			if (flag.getTag().equalsIgnoreCase(tag)) { return true; }
-		}
-		return false;
 	}
 }

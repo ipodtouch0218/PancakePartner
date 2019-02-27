@@ -1,6 +1,7 @@
 package me.ipodtouch0218.pancakepartner.commands.custom;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import me.ipodtouch0218.pancakepartner.BotMain;
 import me.ipodtouch0218.pancakepartner.commands.BotCommand;
@@ -21,7 +22,7 @@ public class CmdSettings extends BotCommand {
 	}
 
 	@Override
-	public void execute(Message msg, String alias, ArrayList<String> args, ArrayList<CommandFlag> flags) {
+	public void execute(Message msg, String alias, ArrayList<String> args, HashMap<String,CommandFlag> flags) {
 		MessageChannel channel = msg.getChannel();
 		GuildSettings settings = BotMain.getGuildSettings(msg.getGuild());
 		
@@ -102,7 +103,7 @@ public class CmdSettings extends BotCommand {
 		case "star": {
 			if (args.size() >= 2) {
 				if (args.size() < 3) {
-					channel.sendMessage(":pancakes: **Invalid Arguments** You must specify a user to add or remove").queue();
+					channel.sendMessage(":pancakes: **Invalid Arguments** You must specify a subaction.").queue();
 				}
 				switch (args.get(1)) {
 				case "channel": {
@@ -129,7 +130,7 @@ public class CmdSettings extends BotCommand {
 					return;
 				}
 				default: {
-					channel.sendMessage(":pancakes: **Invalid Arguments** Unknown function `" + args.get(1) + "`, try 'add' or 'remove'.").queue();
+					channel.sendMessage(":pancakes: **Invalid Arguments** Unknown function `" + args.get(1) + "`, try 'channel' or 'required'.").queue();
 					return;
 				}
 				}
@@ -142,6 +143,33 @@ public class CmdSettings extends BotCommand {
 			channel.sendMessage(":pancakes: List of all bot-admins in this guild: ```" + list + "```To add or remove users, use 'add' and 'remove' as command parameters.").queue();
 			return;
 		}
+		case "poll": {
+			if (args.size() >= 2) {
+				if (args.size() < 3) {
+					channel.sendMessage(":pancakes: **Invalid Arguments** You must specify a subaction.").queue();
+				}
+				switch (args.get(1)) {
+				case "channel": {
+					if (MessageUtils.isChannelMention(args.get(2))) {
+						TextChannel newchannel = MessageUtils.getMentionedChannel(args.get(2));
+						
+						channel.sendMessage(":pancakes: Set " + MessageUtils.asChannelMention(newchannel) + " to be the poll message channel!").queue();
+						settings.setPollChannelID(newchannel.getIdLong());
+						settings.save(msg.getGuild().getIdLong());
+					} else {
+						channel.sendMessage(":pancakes: **Invalid Arguments** You must mention a text channel as the next parameter!").queue();
+					}
+					return;
+				}
+				default: {
+					channel.sendMessage(":pancakes: **Invalid Arguments** Unknown function `" + args.get(1) + "`, try 'channel'pol.").queue();
+					return;
+				}
+				}
+
+			}
+		}
 		}
 	}
 }
+

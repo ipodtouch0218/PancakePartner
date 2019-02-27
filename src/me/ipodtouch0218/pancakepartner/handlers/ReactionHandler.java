@@ -10,7 +10,7 @@ public abstract class ReactionHandler {
 	
 	public ReactionHandler() {}
 	
-	public abstract void handleReaction(GenericMessageReactionEvent e, boolean isOwner);
+	public abstract void handleReaction(GenericMessageReactionEvent e, boolean add, boolean isOwner);
 	
 	public void setOwnerId(long value) { ownerId = value; }
 	public long getOwnerId() { return ownerId; }

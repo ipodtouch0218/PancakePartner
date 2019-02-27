@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 
 import me.ipodtouch0218.pancakepartner.BotMain;
 import me.ipodtouch0218.pancakepartner.commands.BotCommand;
@@ -29,9 +30,9 @@ public class CmdHelp extends BotCommand {
 
 	//--//
 	@Override
-	public void execute(Message msg, String alias, ArrayList<String> args, ArrayList<CommandFlag> flags) {
+	public void execute(Message msg, String alias, ArrayList<String> args, HashMap<String,CommandFlag> flags) {
 		MessageChannel channel = msg.getChannel();
-		boolean dm = containsFlag("dm", flags);
+		boolean dm = flags.containsKey("dm");
 		User sender = msg.getAuthor();
 		if (dm) {
 			try {

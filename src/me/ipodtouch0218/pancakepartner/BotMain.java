@@ -7,7 +7,6 @@ import java.util.HashMap;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 
-import me.ipodtouch0218.pancakepartner.commands.*;
 import me.ipodtouch0218.pancakepartner.commands.custom.*;
 import me.ipodtouch0218.pancakepartner.config.BotSettings;
 import me.ipodtouch0218.pancakepartner.config.GuildSettings;
@@ -83,6 +82,7 @@ public class BotMain {
 		new CmdMinesweeper().register(commandHandler);
 		new CmdStar().register(commandHandler);
 		new CmdRoll().register(commandHandler);
+		new CmdPoll().register(commandHandler);
 	}
 	
 	//--Configuration--//

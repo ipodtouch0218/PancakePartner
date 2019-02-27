@@ -22,18 +22,21 @@ public class GuildSettings {
 	private long starChannelID = -1; //channel where starred messages should be pasted.
 	private int starRequiredStars = 3; //required amount of stars before the message gets pinned to the star channel.
 	
+	private long pollChannelID = -1; //channel where polls are pasted.
 	
 	//--Getters--//
 	public String getCommandPrefix() { return commandPrefix; }
 	public long getStarChannelID() { return starChannelID; }
 	public int getStarRequiredStars() { return starRequiredStars; }
 	public HashSet<Long> getBotAdmins() { return botAdmins; }
+	public long getPollChannelID() { return pollChannelID; }
 	public boolean isBotAdmin(long id) { return botAdmins.contains(id); }
 	
 	//--Setters--//
 	public void setCommandPrefix(String prefix) { commandPrefix = prefix; }
 	public void setStarChannelID(long id) { starChannelID = id; }
 	public void setStarRequiredStars(int stars) { starRequiredStars = stars; }
+	public void setPollChannelID(long id) { pollChannelID = id; }
 	
 	//--Misc--//
 	public boolean addBotAdmin(long id) { return botAdmins.add(id); }

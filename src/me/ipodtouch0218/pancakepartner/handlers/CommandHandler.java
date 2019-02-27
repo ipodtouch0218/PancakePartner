@@ -3,6 +3,7 @@ package me.ipodtouch0218.pancakepartner.handlers;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -73,7 +74,7 @@ public class CommandHandler {
 		}
 		
 		args.remove(0); //remove the command name from the arguments.
-		ArrayList<CommandFlag> flags = new ArrayList<>();
+		HashMap<String,CommandFlag> flags = new HashMap<>();
 		//populate flag list
 		Iterator<String> it = args.iterator();
 		while (it.hasNext()) {
@@ -96,7 +97,7 @@ public class CommandHandler {
 				parameters[i] = nextArg;
 				it.remove();
 			}
-			flags.add(new CommandFlag(dashRemoved, parameters));
+			flags.put(dashRemoved, new CommandFlag(dashRemoved, parameters));
 		}
 		
 		System.out.println(args);

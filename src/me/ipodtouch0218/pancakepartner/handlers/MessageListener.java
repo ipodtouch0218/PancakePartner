@@ -15,6 +15,7 @@ import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageDeleteEvent;
 import net.dv8tion.jda.core.events.message.priv.react.PrivateMessageReactionAddEvent;
 import net.dv8tion.jda.core.events.message.react.GenericMessageReactionEvent;
+import net.dv8tion.jda.core.events.message.react.MessageReactionAddEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
 
 public class MessageListener extends ListenerAdapter {
@@ -62,10 +63,11 @@ public class MessageListener extends ListenerAdapter {
 	
 	private void handleReaction(ReactionHandler handler, GenericMessageReactionEvent e) {
 		boolean isOwner = false;
+		boolean add = e instanceof MessageReactionAddEvent;
 		if (handler.getOwnerId() > -1) {
 			isOwner = (e.getUser().getIdLong() == handler.getOwnerId());
 		}
-		handler.handleReaction(e, isOwner);
+		handler.handleReaction(e, add, isOwner);
 	}
 	
 	private boolean handleStarredReaction(GenericMessageReactionEvent e) {
@@ -136,5 +138,9 @@ public class MessageListener extends ListenerAdapter {
 	//---//
 	public static void addReactionHandler(long messageid, ReactionHandler handler) {
 		reactionHandlers.put(messageid, handler);
+	}
+
+	public static void removeReactionHandler(long messageId) {
+		reactionHandlers.remove(messageId);
 	}
 }

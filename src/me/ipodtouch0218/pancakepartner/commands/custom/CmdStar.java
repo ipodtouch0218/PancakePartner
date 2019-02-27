@@ -11,7 +11,6 @@ import me.ipodtouch0218.pancakepartner.BotMain;
 import me.ipodtouch0218.pancakepartner.commands.BotCommand;
 import me.ipodtouch0218.pancakepartner.commands.CommandFlag;
 import me.ipodtouch0218.pancakepartner.config.GuildSettings;
-import me.ipodtouch0218.pancakepartner.handlers.ReactionHandler;
 import me.ipodtouch0218.pancakepartner.utils.MessageInfoContainer;
 import me.ipodtouch0218.pancakepartner.utils.MessageUtils;
 import me.ipodtouch0218.pancakepartner.utils.MiscUtils;
@@ -19,7 +18,6 @@ import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.entities.Message.Attachment;
-import net.dv8tion.jda.core.events.message.react.GenericMessageReactionEvent;
 
 public class CmdStar extends BotCommand {
 	
@@ -35,7 +33,7 @@ public class CmdStar extends BotCommand {
 
 	//--//
 	@Override
-	public void execute(Message msg, String alias, ArrayList<String> args, ArrayList<CommandFlag> flags) {
+	public void execute(Message msg, String alias, ArrayList<String> args, HashMap<String,CommandFlag> flags) {
 		MessageChannel channel = msg.getChannel();
 		GuildSettings guildSettings = BotMain.getGuildSettings(msg.getGuild());
 		
@@ -213,15 +211,5 @@ public class CmdStar extends BotCommand {
 		public boolean isMessageStarred(long id) { return starredMessages.containsKey(id); }
 		public MessageInfoContainer getMessageFromNotification(long id) { return notificationMessages.get(id); }
 		public boolean isNotificationMessage(long id) { return notificationMessages.containsKey(id); }
-	}
-	
-	public class NotificationHandler extends ReactionHandler {
-		
-		@Override
-		public void handleReaction(GenericMessageReactionEvent e, boolean isOwner) {
-			// TODO Auto-generated method stub
-			
-		}
-		
 	}
 }

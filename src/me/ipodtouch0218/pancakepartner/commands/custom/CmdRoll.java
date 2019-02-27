@@ -2,6 +2,7 @@ package me.ipodtouch0218.pancakepartner.commands.custom;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Random;
 
 import me.ipodtouch0218.pancakepartner.commands.BotCommand;
@@ -23,7 +24,7 @@ public class CmdRoll extends BotCommand {
 	}
 
 	@Override
-	public void execute(Message msg, String alias, ArrayList<String> args, ArrayList<CommandFlag> flags) {
+	public void execute(Message msg, String alias, ArrayList<String> args, HashMap<String,CommandFlag> flags) {
 		MessageChannel channel = msg.getChannel();
 		if (args.size() <= 0) {
 			channel.sendMessage(":pancakes: **Invalid Arguments:** You must specify either a list or dice to roll!").queue();
@@ -31,7 +32,7 @@ public class CmdRoll extends BotCommand {
 		}
 		
 		int rollCount = 1;
-		boolean allowDuplicates = !containsFlag("noduplicates", flags);
+		boolean allowDuplicates = !flags.containsKey("noduplicates");
 		
 		if (args.size() >= 2) {
 			try {
