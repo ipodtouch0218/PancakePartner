@@ -140,7 +140,7 @@ public class CmdStar extends BotCommand {
 		if (!m.getAttachments().isEmpty()) {
 			for (Attachment attachment : m.getAttachments()) {
 				//TODO: fix video embeds
-				if (attachment.isImage() || attachment.getUrl().matches(".+\\.(mov|mp4)")) {
+				if (attachment.isImage() || attachment.getUrl().matches(".+\\.(mov|mp4)$")) {
 //					if (m.getContentDisplay().equals("") || m.getContentDisplay() == null) {
 						embed.setImage(attachment.getUrl());
 //					} else {

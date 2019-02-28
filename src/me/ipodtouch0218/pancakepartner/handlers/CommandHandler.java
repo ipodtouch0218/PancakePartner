@@ -100,9 +100,6 @@ public class CommandHandler {
 			flags.put(dashRemoved, new CommandFlag(dashRemoved, parameters));
 		}
 		
-		System.out.println(args);
-		System.out.println(flags);
-		
 		try {
 			//finally, execute the command.
 			command.execute(msg, cmdName, args, flags);
@@ -119,6 +116,12 @@ public class CommandHandler {
 	}
 	
 	//--Misc Functions--//
+	/**
+	 * Returns if a given message can be parsed into a {@link BotCommand}. Automatically
+	 * checks for {@link GuildSettings} and recognizes the proper Command Prefix. 
+	 * @param msg - Discord {@link Message} instance to check. 
+	 * @return If the specified message is parseable as a command. 
+	 */
 	public static boolean isCommand(Message msg) {
 		String prefix = ";"; //TODO: default prefix
 		if (msg.getChannelType() == ChannelType.TEXT) {
@@ -127,6 +130,13 @@ public class CommandHandler {
 		return msg.getContentDisplay().startsWith(prefix);
 	}
 	
+	/**
+	 * Uses the Levenshtein distance formula to obtain a registered {@link BotCommand} with the given
+	 * name or alias. Possibly null if no command matches at least half of the given input.
+	 * @param input - Input string to check for similar {@link BotCommand}s.
+	 * @return A possibly-null {@link BotCommand} with a similar name to the input.
+	 * @see <a href="https://en.wikipedia.org/wiki/Levenshtein_distance">Levenshtein Distance</a>
+	 */
 	private BotCommand closestCommand(String input) {
 
 		BotCommand closest = null;

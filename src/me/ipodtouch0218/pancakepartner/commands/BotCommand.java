@@ -36,26 +36,63 @@ public abstract class BotCommand {
 	}
 	
 	//--//
+	/**
+	 * Method that gets called when a message comes from a user that both 
+	 * starts with the command prefix + {@link BotCommand#name} OR any {@link BotCommand#aliases}
+	 * & The sender has the correct {@link BotCommand#permission} to use this command.
+	 * 
+	 * @param msg - Discord message instance.
+	 * @param alias - Alias used to execute the command.
+	 * @param args - List of arguments separated by spaces (Excluding flags and their parameters).
+	 * @param flags - List of flags (including flag parameters) which were parsed out of the command.
+	 */
 	public abstract void execute(Message msg, String alias, ArrayList<String> args, HashMap<String,CommandFlag> flags);
 	
+	/**
+	 * Registers this command's instance to a {@link CommandHandler}.
+	 * @param cmdHandler - CommandHandler instance to register to.
+	 */
 	public void register(CommandHandler cmdHandler) {
 		cmdHandler.registerCommand(this);
 	}
 	
 	//--Setters--//
-	public void setPermission(Permission perm) {
-		this.permission = perm;
+	/**
+	 * Sets the {@link Permission} a sender of a command must have to execute this command
+	 * @param permission - New {@link Permission} to require.
+	 */
+	public void setPermission(Permission permission) {
+		this.permission = permission;
 	}
+	/**
+	 * Populates the description and usage. Natively used by {@link CmdHelp}
+	 * @param description - Description of the command.
+	 * @param usage - Usage of the command including possible arguments.
+	 */
 	public void setHelpInfo(String description, String usage) {
 		this.usage = usage;
 		this.description = description; 
 	}
+	/**
+	 * Sets aliases that the command can use in substitution of the {@link BotCommand#name}. The name of the command
+	 * has higher priority than an alias.
+	 * @param alises - An array of aliases to use.
+	 */
 	public void setAliases(String... alises) {
 		this.aliases = alises;
 	}
+	/**
+	 * Adds a {@link CommandFlag} to this command. A flag must be registered in order to be parsed
+	 * properly by the {@link CommandHandler}.
+	 * 
+	 * @param tag - Name of the flag to add.
+	 * @param parameters - Required number of parameters for this flag.
+	 */
 	public void registerFlag(String tag, int parameters) {
 		registeredFlags.put(tag,parameters);
 	}
+	
+	
 	
 	//--Getters--//
 	public String getName() { return name; }

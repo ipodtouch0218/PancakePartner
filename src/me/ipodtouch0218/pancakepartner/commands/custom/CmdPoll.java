@@ -118,7 +118,7 @@ public class CmdPoll extends BotCommand {
 	//--//
 	public void createPollMessage(MessageChannel channel, User creator, String title, String message, long expireMillis, int allowedvotes, boolean clearresults, String... options) {
 		channel.sendMessage(buildMessage(creator, title, message, expireMillis, allowedvotes, clearresults, null)).queue(m -> {
-			PollInfo info = new PollInfo(m, title, message, expireMillis, allowedvotes, clearresults);
+			PollInfo info = new PollInfo(m, creator, title, message, expireMillis, allowedvotes, clearresults);
 			polls.add(info);
 			savePolls();
 			MessageListener.addReactionHandler(m.getIdLong(), new PollReactionHandler(info));
@@ -160,7 +160,7 @@ public class CmdPoll extends BotCommand {
 			Message m = info.getMessageInfo().getMessage(BotMain.getJDA()).complete();
 			String results = "";
 			for (MessageReaction r : m.getReactions()) {
-				results += r.getReactionEmote().getName() + " - " + r.getCount() + "\n";
+				results += r.getReactionEmote().getName() + " - " + (r.getCount()-1) + "\n";
 			}
 			embed.addField("FINAL RESULTS:", results.trim(), false);
 					
@@ -172,7 +172,11 @@ public class CmdPoll extends BotCommand {
 		}
 		embed.setDescription(message);
 		embed.setFooter("Created by: " + MessageUtils.nameAndDiscrim(creator), creator.getAvatarUrl());
-		embed.setTimestamp(Instant.now());
+		if (info == null) {
+			embed.setTimestamp(Instant.now());
+		} else {
+			embed.setTimestamp(Instant.ofEpochMilli(info.getCreatedDate()));
+		}
 		
 		return embed.build();
 	}
@@ -214,16 +218,18 @@ public class CmdPoll extends BotCommand {
 		private int allowedVotes = 1;
 		private MessageInfoContainer messageInfo = null;
 		private boolean clearResults = false;
+		private long createdDate = -1;
 		
 		public PollInfo() {}
-		public PollInfo(Message poll, String title, String message, long expireTime, int votes, boolean clearresults) {
+		public PollInfo(Message poll, User creator, String title, String message, long expireTime, int votes, boolean clearresults) {
 			messageInfo = new MessageInfoContainer(poll);
 			this.title = title;
 			expireTimeMillis = expireTime;
 			allowedVotes = votes;
 			this.message = message;
 			this.clearResults = clearresults;
-			this.creatorId = poll.getAuthor().getIdLong();
+			this.creatorId = creator.getIdLong();
+			createdDate = System.currentTimeMillis();
 		}
 		
 		public String getMessage() { return message; }
@@ -233,6 +239,7 @@ public class CmdPoll extends BotCommand {
 		public int getAllowedVotes() { return allowedVotes; }
 		public boolean willClearResults() { return clearResults; }
 		public MessageInfoContainer getMessageInfo() { return messageInfo; }
+		public long getCreatedDate() { return createdDate; }
 	}
 	public static class PollReactionHandler extends ReactionHandler {
 
