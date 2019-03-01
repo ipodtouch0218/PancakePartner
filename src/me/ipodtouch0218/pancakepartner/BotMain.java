@@ -22,15 +22,14 @@ public class BotMain {
 
 	/* TODO:
 	 * Display possible flags in help command.
-	 * Allow flags to take later arguments as their own parameters
-	 * Change starred message notifications to remember their message instead of parsing the notification.
-	 * Standardize comment format (headers and sections specfically)
 	 * Clean up utils (in general)
-	 * Possible idea: reaction-based message listeners? Maybe a list of listeners and abstract classes?
 	 * 
-	 * Comment some more classes:
-	 * - CmdSettings
+	 * Give javadocs to some more classes:
 	 * - MessageListener
+	 * - ReactionHandler
+	 * - BotSettings
+	 * - Finish BotMain
+	 * - Finish CommandHandler
 	 */
 	
 	//PROGRAM START
@@ -86,7 +85,7 @@ public class BotMain {
 	}
 	
 	//--Configuration--//
-	private void loadSettings() {
+	public void loadSettings() {
 		if (!configFile.exists()) {
 			botConfig = new BotSettings();
 			saveSettings();
@@ -98,6 +97,9 @@ public class BotMain {
 		}
 	}
 	
+	/**
+	 * Saves the current {@link BotSettings} to the config.yml file.
+	 */
 	public void saveSettings() {
 		try {
 			yamlMapper.writeValue(configFile, botConfig);
@@ -107,11 +109,40 @@ public class BotMain {
 	}
 
 	//--Getters--//
+	/**
+	 * Returns the JDA instance the bot is currently running on. Can be null before running {@link BotMain#buildBot()}
+	 * @return {@link JDA} instance of the bot.
+	 */
 	public static JDA getJDA() { return jdaInstance; }
+	/**
+	 * Returns a MessageListener instance which the bot uses for event handling.
+	 * @return {@link MessageListener} the bot is using.
+	 */
 	public static MessageListener getMessageListener() { return messageListener; }
+	/**
+	 * Returns the a CommandHandler instance that the current {@link MessageHandler} uses. 
+	 * @return Current {@link CommandHandler} instance.
+	 */
 	public static CommandHandler getCommandHandler() { return commandHandler; }
+	/**
+	 * Returns settings for the whole bot to use. Contains things like the default Command Prefix, bot token, {@link Game} playing
+	 * message, and more miscellaneous settings. Saved to config.yml.
+	 * @return {@link BotSettings} instance for the whole bot.
+	 */
 	public static BotSettings getBotSettings() { return botConfig; }
+	/**
+	 * Returns guild-specific settings which Bot Administrators can set using {@link CmdSettings}
+	 * Functionally the same to {@link BotMain#getGuildSettings(long)} without having to call {@link Guild#getIdLong()}
+	 * @param guild - {@link Guild} instance to retrieve settings for.
+	 * @return {@link GuildSettings} instance for the given guild.
+	 * @see BotMain#getGuildSettings(long)
+	 */
 	public static GuildSettings getGuildSettings(Guild guild) { return getGuildSettings(guild.getIdLong()); }
+	/**
+	 * Returns guild-specfic settings which Bot Administrators can set using {@link CmdSettings}
+	 * @param id - Guild ID to retrieve settings for.
+	 * @return {@link Guildsettings} instance for the given guild.
+	 */
 	public static GuildSettings getGuildSettings(long id) {
 		if (guildSettings.containsKey(id)) {
 			//settings already loaded, return

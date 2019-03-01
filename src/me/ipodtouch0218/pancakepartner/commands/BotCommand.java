@@ -49,7 +49,8 @@ public abstract class BotCommand {
 	public abstract void execute(Message msg, String alias, ArrayList<String> args, HashMap<String,CommandFlag> flags);
 	
 	/**
-	 * Registers this command's instance to a {@link CommandHandler}.
+	 * Registers this command's instance to a {@link CommandHandler}. Note that this
+	 * is identical to {@link CommandHandler#registerCommand(BotCommand)}
 	 * @param cmdHandler - CommandHandler instance to register to.
 	 */
 	public void register(CommandHandler cmdHandler) {

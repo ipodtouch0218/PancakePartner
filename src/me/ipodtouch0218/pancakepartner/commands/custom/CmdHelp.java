@@ -20,7 +20,7 @@ import net.dv8tion.jda.core.entities.User;
 public class CmdHelp extends BotCommand {
 
 	//--Variables & Constructor--//
-	private static final int cmdsPerPage = 3;
+	private static final int cmdsPerPage = 6;
 	
 	public CmdHelp() {
 		super("help", true, true);
@@ -65,8 +65,8 @@ public class CmdHelp extends BotCommand {
 	
 	private static void outputPagedCommandList(MessageChannel channel, int pagenumber, User sender, Message override) {
 
-		ArrayList<BotCommand> allCmds = BotMain.getCommandHandler().getAllCommands();
-		int maxpages = ((allCmds.size()-1)/cmdsPerPage);
+		BotCommand[] allCmds = BotMain.getCommandHandler().getAllCommands().toArray(new BotCommand[]{});
+		int maxpages = ((allCmds.length-1)/cmdsPerPage);
 		if (pagenumber > maxpages) { 
 			pagenumber = maxpages;
 		}
@@ -75,8 +75,8 @@ public class CmdHelp extends BotCommand {
 		page.setTitle(":pancakes: **Command List:** `(Page " + (pagenumber+1) + "/" + (maxpages+1) + ")`");
 		page.setColor(Color.GREEN);
 		for (int i = 0; i < cmdsPerPage; i++) {
-			if (i + (pagenumber * cmdsPerPage) >= allCmds.size()) { break; }
-			BotCommand nextCmd = allCmds.get(i + (pagenumber * cmdsPerPage));
+			if (i + (pagenumber * cmdsPerPage) >= allCmds.length) { break; }
+			BotCommand nextCmd = allCmds[i + (pagenumber * cmdsPerPage)];
 
 			String title = nextCmd.getName();
 			page.addField(title, nextCmd.getDescription(), true);

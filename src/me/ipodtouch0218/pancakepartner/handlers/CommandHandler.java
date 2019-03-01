@@ -4,6 +4,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -11,6 +12,7 @@ import java.util.regex.Pattern;
 import me.ipodtouch0218.pancakepartner.BotMain;
 import me.ipodtouch0218.pancakepartner.commands.BotCommand;
 import me.ipodtouch0218.pancakepartner.commands.CommandFlag;
+import me.ipodtouch0218.pancakepartner.config.GuildSettings;
 import me.ipodtouch0218.pancakepartner.utils.MiscUtils;
 import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.entities.Message;
@@ -23,7 +25,7 @@ public class CommandHandler {
 	
 	///INSTANCE STUFFS
 	//--Variables & Constructor--//
-	private ArrayList<BotCommand> commands = new ArrayList<>(); //list of all registered commands
+	private HashSet<BotCommand> commands = new HashSet<>(); //list of all registered commands
 	
 	//--Command Execution--//
 	public void executeCommand(Message msg, User sender) {
@@ -158,6 +160,12 @@ public class CommandHandler {
 	
 	
 	//--Command Management--//
+	/**
+	 * Registers a command to this CommandHandler. Commands must be registered before they will
+	 * be able to be exectued by users and detected by help commands.
+	 * @param newCmd - Command to be registered
+	 * @return If the command was successfully added, i.e. {@link ArrayList#add()}
+	 */
 	public boolean registerCommand(BotCommand newCmd) {
 		return commands.add(newCmd);
 	}
@@ -166,7 +174,7 @@ public class CommandHandler {
 	}
 	
 	//--Getters--//
-	public ArrayList<BotCommand> getAllCommands() { return commands; }
+	public HashSet<BotCommand> getAllCommands() { return commands; }
 	public BotCommand getCommandByName(String name) {
 		BotCommand cmd = null;
 		for (BotCommand cmds : commands) {
