@@ -56,7 +56,6 @@ public class BotMain {
 	}
 	
 	//--Startup Methods--//
-	@SuppressWarnings("deprecation")
 	private void buildBot() {
 		messageListener = new MessageListener();
 		commandHandler = new CommandHandler();
@@ -67,7 +66,7 @@ public class BotMain {
 				.setToken(botConfig.getToken()) //set the bot token for login
 				.addEventListener(messageListener) //initializes messagelistener to the bot
 				.setGame(Game.playing(botConfig.getBotPlayingMessage())) //bot playing message, showing people usage.
-				.buildBlocking(); //finalizes and builds the bot on the same thread
+				.build(); //finalizes and builds the bot
 		} catch (Exception e) {
 			System.err.println("Unable to start the bot!"); //error! program terminates from here.
 			e.printStackTrace(); //print error to the console output

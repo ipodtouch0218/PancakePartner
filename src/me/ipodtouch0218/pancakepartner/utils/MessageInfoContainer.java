@@ -46,6 +46,7 @@ public class MessageInfoContainer {
 	 * @return Possibly-null Guild instance.
 	 */
 	public Guild getGuild(JDA jda) {
+		if (jda == null) { return null; }
 		if (guildId <= -1) { return null; }
 		return jda.getGuildById(guildId);
 	}
@@ -56,6 +57,7 @@ public class MessageInfoContainer {
 	 * @return Possibly-null Channel instance.
 	 */
 	public MessageChannel getChannel(JDA jda) {
+		if (jda == null) { return null; }
 		if (guildId <= -1) {
 			return jda.getPrivateChannelById(channelId);
 		} 
@@ -67,7 +69,10 @@ public class MessageInfoContainer {
 	 * @return RestAction to retrieve the message.
 	 */
 	public RestAction<Message> getMessage(JDA jda) {
-		return getChannel(jda).getMessageById(messageId);
+		if (jda == null) { return null; }
+		MessageChannel c = getChannel(jda);
+		if (c == null) { return null; }
+		return c.getMessageById(messageId);
 	}
 	
 	/**

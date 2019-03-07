@@ -19,6 +19,7 @@ import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.events.message.react.GenericMessageReactionEvent;
+import net.dv8tion.jda.core.requests.RestAction;
 
 public class CmdPoll extends BotCommand {
 
@@ -30,14 +31,12 @@ public class CmdPoll extends BotCommand {
 		setHelpInfo("Creates a poll using reactions for people to answer.", "poll \"<message>\" <emoji1> [emoji2] [emoji3...]");
 		
 		registerFlag("duration", 1);
-		registerFlag("votes", 1);
 		registerFlag("title", 1);
 		registerFlag("channel", 1);
 		registerFlag("clearresults", 0);
 		
 		loadPolls();
 		
-		//TODO: update polls timers and close them when appropriate
 		new Thread(() -> {
 			while (true) {
 				for (PollInfo poll : polls) {
@@ -55,39 +54,23 @@ public class CmdPoll extends BotCommand {
 		MessageChannel channel = msg.getChannel();
 		
 		if (args.size() <= 0) {
-			channel.sendMessage(":pancakes: **Invalid Arguments:** You must specify a message to send! (Use quotes around the message!!)").queue();
+			channel.sendMessage(":pancakes: **Invalid Arguments:** You must specify a title and message to send! (Use quotes around the message!!)").queue();
 			return;
 		}
-		if (args.size() < 2) {
+		if (args.size() < 3) {
 			channel.sendMessage(":pancakes: **Invalid Arguments:** You must specify at least one voting option.").queue();
 			return;
 		}
 		
-		String message = args.get(0);
+		String title = args.get(0);
+		String message = args.get(1);
 		String[] options = new String[args.size()-1];
-		for (int i = 1; i < args.size(); i++) {
-			options[i-1] = args.get(i);
+		for (int i = 2; i < args.size(); i++) {
+			options[i-2] = args.get(i);
 		}
 		
-		String title = "New Poll";
-		int allowedvotes = 1;
 		long expireMillis = -1;
 		boolean clearresults = flags.containsKey("clearresults");
-		if (flags.containsKey("title")) {
-			title = flags.get("title").getParameters()[0];
-		}
-		if (flags.containsKey("votes")) {
-			try {
-				allowedvotes = Integer.parseInt(flags.get("votes").getParameters()[0]);
-			} catch (NumberFormatException e) {
-				channel.sendMessage(":pancakes: **Invalid Arguments:** Parameter for 'votes' flag was not a number.").queue();
-				return;
-			}
-			if (allowedvotes <= 0 || allowedvotes > args.size()) {
-				channel.sendMessage(":pancakes: **Invalid Arguments:** Invalid vote amount (either too little < 1, or too big > possible options).").queue();
-				return;
-			}
-		}
 		if (flags.containsKey("duration")) {
 			try {
 				int minutes = Integer.parseInt(flags.get("duration").getParameters()[0]);
@@ -112,13 +95,13 @@ public class CmdPoll extends BotCommand {
 			return;
 		}
 		
-		createPollMessage(postChannel, msg.getAuthor(), title, message, expireMillis, allowedvotes, clearresults, options);
+		createPollMessage(postChannel, msg.getAuthor(), title, message, expireMillis, clearresults, options);
 	}
 	
 	//--//
-	public void createPollMessage(MessageChannel channel, User creator, String title, String message, long expireMillis, int allowedvotes, boolean clearresults, String... options) {
-		channel.sendMessage(buildMessage(creator, title, message, expireMillis, allowedvotes, clearresults, null)).queue(m -> {
-			PollInfo info = new PollInfo(m, creator, title, message, expireMillis, allowedvotes, clearresults);
+	public void createPollMessage(MessageChannel channel, User creator, String title, String message, long expireMillis, boolean clearresults, String... options) {
+		channel.sendMessage(buildMessage(creator, title, message, expireMillis, clearresults, null)).queue(m -> {
+			PollInfo info = new PollInfo(m, creator, title, message, expireMillis, clearresults);
 			polls.add(info);
 			savePolls();
 			MessageListener.addReactionHandler(m.getIdLong(), new PollReactionHandler(info));
@@ -127,14 +110,21 @@ public class CmdPoll extends BotCommand {
 	}
 	
 	public void editPollMessage(PollInfo info) {
+		if (BotMain.getJDA() == null) { return; }
 		User creator = BotMain.getJDA().getUserById(info.getCreatorId());
 		
-		info.getMessageInfo().getMessage(BotMain.getJDA()).queue(m -> {
+		RestAction<Message> promise = info.getMessageInfo().getMessage(BotMain.getJDA());
+		if (promise == null) { return; }
+		promise.queue(m -> {
 			m.editMessage(buildMessage(creator, info)).queue();
+		}, e -> {
+			//unable to get the message that the poll is in
+			polls.remove(info);
+			savePolls();
 		});
 	}
 	
-	private MessageEmbed buildMessage(User creator, String title, String message, long expireTimeMillis, int allowedvotes, boolean clearresults, PollInfo info) {
+	private MessageEmbed buildMessage(User creator, String title, String message, long expireTimeMillis, boolean clearresults, PollInfo info) {
 		EmbedBuilder embed = new EmbedBuilder();
 		
 		embed.setColor(15074559);
@@ -165,6 +155,7 @@ public class CmdPoll extends BotCommand {
 			embed.addField("FINAL RESULTS:", results.trim(), false);
 					
 			polls.remove(info);
+			savePolls();
 			MessageListener.removeReactionHandler(info.getMessageInfo().getMessageId());
 			if (clearresults) {
 				m.clearReactions().queue();	
@@ -181,7 +172,7 @@ public class CmdPoll extends BotCommand {
 		return embed.build();
 	}
 	private MessageEmbed buildMessage(User creator, PollInfo info) {
-		return buildMessage(creator, info.title, info.message, info.expireTimeMillis, info.allowedVotes, info.clearResults, info);
+		return buildMessage(creator, info.title, info.message, info.expireTimeMillis, info.clearResults, info);
 	}
 	
 	//--//
@@ -215,17 +206,15 @@ public class CmdPoll extends BotCommand {
 		private String message = "";
 		private long creatorId = -1;
 		private long expireTimeMillis = -1;
-		private int allowedVotes = 1;
 		private MessageInfoContainer messageInfo = null;
 		private boolean clearResults = false;
 		private long createdDate = -1;
 		
 		public PollInfo() {}
-		public PollInfo(Message poll, User creator, String title, String message, long expireTime, int votes, boolean clearresults) {
+		public PollInfo(Message poll, User creator, String title, String message, long expireTime, boolean clearresults) {
 			messageInfo = new MessageInfoContainer(poll);
 			this.title = title;
 			expireTimeMillis = expireTime;
-			allowedVotes = votes;
 			this.message = message;
 			this.clearResults = clearresults;
 			this.creatorId = creator.getIdLong();
@@ -236,7 +225,6 @@ public class CmdPoll extends BotCommand {
 		public long getCreatorId() { return creatorId; }
 		public long getExpireTimeMillis() { return expireTimeMillis; }
 		public String getTitle() { return title; }
-		public int getAllowedVotes() { return allowedVotes; }
 		public boolean willClearResults() { return clearResults; }
 		public MessageInfoContainer getMessageInfo() { return messageInfo; }
 		public long getCreatedDate() { return createdDate; }
