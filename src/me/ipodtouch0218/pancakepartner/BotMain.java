@@ -53,6 +53,7 @@ public class BotMain {
 		registerCommands();
 		try {
 			botCore.startBot();
+			botCore.getShardManager().addEventListener(new CustomListener());
 		} catch (IllegalArgumentException | LoginException e) {
 			e.printStackTrace();
 		}
