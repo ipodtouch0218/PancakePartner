@@ -1,14 +1,13 @@
 package me.ipodtouch0218.pancakepartner.config;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.HashSet;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import me.ipodtouch0218.pancakepartner.BotMain;
+import me.ipodtouch0218.sjbotcore.files.YamlConfig;
 
-public class GuildSettings {
+public class GuildSettings extends YamlConfig {
 
 	@JsonIgnore
 	private static final File GUILD_FOLDER = new File("guilds/");
@@ -76,12 +75,8 @@ public class GuildSettings {
 	 */
 	public void save(long id) {
 		File settingsFile = new File("guilds/" + id + ".yml");
-		try {
-			GUILD_FOLDER.mkdirs();
-			BotMain.yamlMapper.writeValue(settingsFile, this);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		GUILD_FOLDER.mkdirs();
+		super.saveConfig(settingsFile);
 	}
 	
 	/**
@@ -94,14 +89,6 @@ public class GuildSettings {
 	public static GuildSettings load(long id) {
 		File settingsFile = new File("guilds/" + id + ".yml");
 		
-		try {
-			return BotMain.yamlMapper.readValue(settingsFile, GuildSettings.class);
-		} catch (IOException e) {
-			e.printStackTrace();
-			//file doesnt exist or mangled file? oh well, new settings.
-			GuildSettings newSettings = new GuildSettings();
-			newSettings.save(id);
-			return newSettings;
-		}
+		return YamlConfig.loadConfig(settingsFile, GuildSettings.class);
 	}
 }

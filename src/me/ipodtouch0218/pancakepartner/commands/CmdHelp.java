@@ -1,16 +1,16 @@
-package me.ipodtouch0218.pancakepartner.commands.custom;
+package me.ipodtouch0218.pancakepartner.commands;
 
 import java.awt.Color;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
+import java.util.Optional;
 
 import me.ipodtouch0218.pancakepartner.BotMain;
-import me.ipodtouch0218.pancakepartner.commands.BotCommand;
-import me.ipodtouch0218.pancakepartner.commands.CommandFlag;
 import me.ipodtouch0218.pancakepartner.utils.MessageUtils;
 import me.ipodtouch0218.pancakepartner.utils.MiscUtils;
+import me.ipodtouch0218.sjbotcore.command.BotCommand;
+import me.ipodtouch0218.sjbotcore.command.FlagSet;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Message;
@@ -30,9 +30,9 @@ public class CmdHelp extends BotCommand {
 
 	//--//
 	@Override
-	public void execute(Message msg, String alias, ArrayList<String> args, HashMap<String,CommandFlag> flags) {
+	public void execute(Message msg, String alias, ArrayList<String> args, FlagSet flags) {
 		MessageChannel channel = msg.getChannel();
-		boolean dm = flags.containsKey("dm");
+		boolean dm = flags.containsFlag("dm");
 		User sender = msg.getAuthor();
 		if (dm) {
 			try {
@@ -48,12 +48,12 @@ public class CmdHelp extends BotCommand {
 			if (MiscUtils.isInteger(args.get(0))) {
 				pageNumber = Integer.parseInt(args.get(0));
 			} else {
-				BotCommand command = BotMain.getCommandHandler().getCommandByName(args.get(0));
-				if (command == null) {
+				Optional<BotCommand> command = BotMain.getBotCore().getCommandHandler().getCommandByName(args.get(0));
+				if (!command.isPresent()) {
 					channel.sendMessage(":pancakes: **Invalid Argument:** `" + args.get(0) + "` is not a valid command.").queue();
 					return;
 				}
-				outputCommandPage(msg.getGuild(), channel, command, sender);
+				outputCommandPage(msg.getGuild(), channel, command.get(), sender);
 				if (dm) {
 					msg.getChannel().sendMessage(":pancakes: Sent you a DM containing help info!").queue();
 				}
@@ -65,7 +65,7 @@ public class CmdHelp extends BotCommand {
 	
 	private static void outputPagedCommandList(MessageChannel channel, int pagenumber, User sender, Message override) {
 
-		BotCommand[] allCmds = BotMain.getCommandHandler().getAllCommands().toArray(new BotCommand[]{});
+		BotCommand[] allCmds = BotMain.getBotCore().getCommandHandler().getAllCommands().toArray(new BotCommand[]{});
 		int maxpages = ((allCmds.length-1)/cmdsPerPage);
 		if (pagenumber > maxpages) { 
 			pagenumber = maxpages;
@@ -87,7 +87,7 @@ public class CmdHelp extends BotCommand {
 	}
 	
 	private static void outputCommandPage(Guild guild, MessageChannel channel, BotCommand cmd, User sender) {
-		String cmdPrefix = BotMain.getBotSettings().getDefaultCommandPrefix();
+		String cmdPrefix = BotMain.getBotCore().getBotSettings().defaultCommandPrefix;
 		if (guild != null) {
 			cmdPrefix = BotMain.getGuildSettings(guild).getCommandPrefix();
 		}

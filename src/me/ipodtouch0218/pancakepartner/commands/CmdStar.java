@@ -1,19 +1,19 @@
-package me.ipodtouch0218.pancakepartner.commands.custom;
+package me.ipodtouch0218.pancakepartner.commands;
 
 import java.awt.Color;
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.regex.Matcher;
 
 import me.ipodtouch0218.pancakepartner.BotMain;
-import me.ipodtouch0218.pancakepartner.commands.BotCommand;
-import me.ipodtouch0218.pancakepartner.commands.CommandFlag;
 import me.ipodtouch0218.pancakepartner.config.GuildSettings;
-import me.ipodtouch0218.pancakepartner.utils.MessageInfoContainer;
 import me.ipodtouch0218.pancakepartner.utils.MessageUtils;
 import me.ipodtouch0218.pancakepartner.utils.MiscUtils;
+import me.ipodtouch0218.sjbotcore.command.BotCommand;
+import me.ipodtouch0218.sjbotcore.command.FlagSet;
+import me.ipodtouch0218.sjbotcore.files.YamlConfig;
+import me.ipodtouch0218.sjbotcore.util.MessageContainer;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
@@ -33,7 +33,7 @@ public class CmdStar extends BotCommand {
 
 	//--//
 	@Override
-	public void execute(Message msg, String alias, ArrayList<String> args, HashMap<String,CommandFlag> flags) {
+	public void execute(Message msg, String alias, ArrayList<String> args, FlagSet flags) {
 		MessageChannel channel = msg.getChannel();
 		GuildSettings guildSettings = BotMain.getGuildSettings(msg.getGuild());
 		
@@ -41,7 +41,7 @@ public class CmdStar extends BotCommand {
 			channel.sendMessage(":pancakes: **Error:** The star channel is not set! Use 'settings star channel #<channel>' to set the channel for this guild!").queue();
 			return;
 		}
-		TextChannel starChannel = BotMain.getJDA().getTextChannelById(guildSettings.getStarChannelID());
+		TextChannel starChannel = BotMain.getBotCore().getShardManager().getTextChannelById(guildSettings.getStarChannelID());
 		
 		if (args.size() <= 0) {
 			channel.sendMessage(":pancakes: **Invalid Arguments:** You must specify a message's ID or a message link.").queue();
@@ -50,8 +50,12 @@ public class CmdStar extends BotCommand {
 		
 		Matcher match = MiscUtils.PATTERN_MESSAGE_LINK.matcher(args.get(0));
 		if (match.matches()) {
-			
-			Guild guild = BotMain.getJDA().getGuildById(match.group("guild"));
+			long id = Long.parseLong(match.group("guild"));
+			if (id != msg.getGuild().getIdLong()) {
+				channel.sendMessage(":pancakes: **Invalid Argument:** Cannot star a message from another guild! Try running the command in *that* guild instead.").queue();
+				return;
+			}
+			Guild guild = msg.getJDA().getGuildById(id);
 			if (guild == null) {
 				channel.sendMessage(":pancakes: **Invalid Argument:** I cannot access this message: Not in the same guild as the message.").queue();
 				return;
@@ -106,7 +110,7 @@ public class CmdStar extends BotCommand {
 		MessageEmbed embed = buildStarredMessageEmbed(originalMsg);
 		
 		channel.sendMessage(embed).queue(m -> {
-			info.starredMessages.put(originalMsg.getIdLong(), new MessageInfoContainer(m));
+			info.starredMessages.put(originalMsg.getIdLong(), new MessageContainer(m));
 			saveStarredMessages();
 		});
 		sendNotificationMessage(originalMsg);
@@ -115,7 +119,7 @@ public class CmdStar extends BotCommand {
 	public static void editStarredMessage(Message sourceMsg) {
 		MessageEmbed embed = buildStarredMessageEmbed(sourceMsg);
 		
-		info.starredMessages.get(sourceMsg.getIdLong()).getMessage(BotMain.getJDA()).queue(editmsg -> {
+		info.starredMessages.get(sourceMsg.getIdLong()).getMessage(BotMain.getBotCore().getShardManager()).queue(editmsg -> {
 			editmsg.editMessage(embed).queue();
 			saveStarredMessages();
 		});
@@ -162,7 +166,7 @@ public class CmdStar extends BotCommand {
 					+ "click the :no_entry: reaction under this mesasge to remove it.")
 			.queue(m -> {
 				m.addReaction("\u26D4").queue();
-				info.notificationMessages.put(m.getIdLong(), new MessageInfoContainer(msg));
+				info.notificationMessages.put(m.getIdLong(), new MessageContainer(msg));
 				saveStarredMessages();
 			});
 		}, e -> {
@@ -173,43 +177,28 @@ public class CmdStar extends BotCommand {
 	
 	//--Loading and Saving-//
 	public static void saveStarredMessages() {
-		try {
-			BotMain.yamlMapper.writeValue(saveFile, info);
-		} catch (IOException e) {
-			System.out.println("Unable to save starred messages to file!");
-			e.printStackTrace();
-		}
+		info.saveConfig(saveFile);
 	}
 	
 	private static void loadStarredMessages() {
-		if (saveFile.exists()) {
-			try {
-				info = BotMain.yamlMapper.readValue(saveFile, StarredMessageInfo.class);
-			} catch (IOException e) {
-				//TRY LOADING OLD-FORMAT SAVED FILE
-				e.printStackTrace();
-				info = new StarredMessageInfo();
-			}
-		} else {
-			info = new StarredMessageInfo();
-		}
+		info = YamlConfig.loadConfig(saveFile, StarredMessageInfo.class);
 	}
 	
 	public static StarredMessageInfo getStarredMessageInfo() { return info; }
 	
 	//--Info Class--//
-	public static class StarredMessageInfo {
-		private HashMap<Long, MessageInfoContainer> starredMessages = new HashMap<>();
+	public static class StarredMessageInfo extends YamlConfig {
+		private HashMap<Long, MessageContainer> starredMessages = new HashMap<>();
 		private ArrayList<Long> ignoredMessages = new ArrayList<>();
-		private HashMap<Long, MessageInfoContainer> notificationMessages = new HashMap<>();
+		private HashMap<Long, MessageContainer> notificationMessages = new HashMap<>();
 		
-		public HashMap<Long, MessageInfoContainer> getStarredMessages() { return starredMessages; }
+		public HashMap<Long, MessageContainer> getStarredMessages() { return starredMessages; }
 		public ArrayList<Long> getIgnoredMessages() { return ignoredMessages; }
-		public HashMap<Long, MessageInfoContainer> getNotificationMessages() { return notificationMessages; }
+		public HashMap<Long, MessageContainer> getNotificationMessages() { return notificationMessages; }
 		
 		public boolean isMessageIgnored(long id) { return ignoredMessages.contains(id); }
 		public boolean isMessageStarred(long id) { return starredMessages.containsKey(id); }
-		public MessageInfoContainer getMessageFromNotification(long id) { return notificationMessages.get(id); }
+		public MessageContainer getMessageFromNotification(long id) { return notificationMessages.get(id); }
 		public boolean isNotificationMessage(long id) { return notificationMessages.containsKey(id); }
 	}
 }

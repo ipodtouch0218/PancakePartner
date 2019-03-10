@@ -1,11 +1,10 @@
-package me.ipodtouch0218.pancakepartner.commands.custom;
+package me.ipodtouch0218.pancakepartner.commands;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Random;
 
-import me.ipodtouch0218.pancakepartner.commands.BotCommand;
-import me.ipodtouch0218.pancakepartner.commands.CommandFlag;
+import me.ipodtouch0218.sjbotcore.command.BotCommand;
+import me.ipodtouch0218.sjbotcore.command.FlagSet;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.utils.tuple.Pair;
@@ -26,7 +25,7 @@ public class CmdMinesweeper extends BotCommand {
 	}
 
 	@Override
-	public void execute(Message msg, String alias, ArrayList<String> args, HashMap<String,CommandFlag> flags) {
+	public void execute(Message msg, String alias, ArrayList<String> args, FlagSet flags) {
 		MessageChannel channel = msg.getChannel();
 		int boardwidth = 8;
 		int boardheight = 8;
@@ -82,7 +81,7 @@ public class CmdMinesweeper extends BotCommand {
 			info = "*No mines. What fun.*";
 		}
 		
-		boolean outputHint = flags.containsKey("hint");
+		boolean outputHint = flags.containsFlag("hint");
 		
 		char[][] board = generateMinesweeperBoard(boardwidth, boardheight, minecount, outputHint);
 		String hint = "";
@@ -93,7 +92,7 @@ public class CmdMinesweeper extends BotCommand {
 				hint = " HINT: (" + (hintX+1) + ", " + (hintY+1) + ") is blank!";
 			}
 		}
-		channel.sendMessage(":pancakes: **PancakeGames: Minesweeper** " + info + hint + "\n" + outputBoard(board, flags.containsKey("mobile"), flags.containsKey("coords"))).queue();
+		channel.sendMessage(":pancakes: **PancakeGames: Minesweeper** " + info + hint + "\n" + outputBoard(board, flags.containsFlag("mobile"), flags.containsFlag("coords"))).queue();
 	}
 	
 	private int hintX, hintY;

@@ -1,20 +1,20 @@
-package me.ipodtouch0218.pancakepartner.commands.custom;
+package me.ipodtouch0218.pancakepartner.commands;
 
 import java.io.File;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 
 import me.ipodtouch0218.pancakepartner.BotMain;
-import me.ipodtouch0218.pancakepartner.commands.BotCommand;
-import me.ipodtouch0218.pancakepartner.commands.CommandFlag;
 import me.ipodtouch0218.pancakepartner.config.GuildSettings;
-import me.ipodtouch0218.pancakepartner.handlers.MessageListener;
-import me.ipodtouch0218.pancakepartner.handlers.ReactionHandler;
-import me.ipodtouch0218.pancakepartner.utils.MessageInfoContainer;
 import me.ipodtouch0218.pancakepartner.utils.MessageUtils;
+import me.ipodtouch0218.sjbotcore.SJBotCore;
+import me.ipodtouch0218.sjbotcore.command.BotCommand;
+import me.ipodtouch0218.sjbotcore.command.FlagSet;
+import me.ipodtouch0218.sjbotcore.files.YamlConfig;
+import me.ipodtouch0218.sjbotcore.handler.ReactionHandler;
+import me.ipodtouch0218.sjbotcore.util.MessageContainer;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
@@ -39,8 +39,10 @@ public class CmdPoll extends BotCommand {
 		
 		new Thread(() -> {
 			while (true) {
-				for (PollInfo poll : polls) {
-					editPollMessage(poll);
+				if (BotMain.getBotCore() != null) {
+					for (PollInfo poll : polls) {
+						editPollMessage(poll, BotMain.getBotCore());
+					}
 				}
 				try {
 					Thread.sleep(10*1000);
@@ -50,7 +52,7 @@ public class CmdPoll extends BotCommand {
 	}
 
 	@Override
-	public void execute(Message msg, String alias, ArrayList<String> args, HashMap<String,CommandFlag> flags) {
+	public void execute(Message msg, String alias, ArrayList<String> args, FlagSet flags) {
 		MessageChannel channel = msg.getChannel();
 		
 		if (args.size() <= 0) {
@@ -70,10 +72,10 @@ public class CmdPoll extends BotCommand {
 		}
 		
 		long expireMillis = -1;
-		boolean clearresults = flags.containsKey("clearresults");
-		if (flags.containsKey("duration")) {
+		boolean clearresults = flags.containsFlag("clearresults");
+		if (flags.containsFlag("duration")) {
 			try {
-				int minutes = Integer.parseInt(flags.get("duration").getParameters()[0]);
+				int minutes = Integer.parseInt(flags.getFlag("duration").get().getParameters()[0]);
 				expireMillis = System.currentTimeMillis() + (minutes * 60 * 1000);
 			} catch (NumberFormatException e) {
 				channel.sendMessage(":pancakes: **Invalid Arguments:** Parameter for 'duration' flag was not a number (NOTE: duration is in MINUTES).").queue();
@@ -82,11 +84,11 @@ public class CmdPoll extends BotCommand {
 		}
 
 		GuildSettings settings = BotMain.getGuildSettings(msg.getGuild());
-		MessageChannel postChannel = BotMain.getJDA().getTextChannelById(settings.getPollChannelID());
-		if (flags.containsKey("channel")) {
-			postChannel = MessageUtils.getMentionedChannel(flags.get("channel").getParameters()[0]);
+		MessageChannel postChannel = BotMain.getBotCore().getShardManager().getTextChannelById(settings.getPollChannelID());
+		if (flags.containsFlag("channel")) {
+			postChannel = MessageUtils.getMentionedChannel(flags.getFlag("channel").get().getParameters()[0], BotMain.getBotCore());
 			if (postChannel == null) {
-				channel.sendMessage(":pancakes: **Invalid Arguments:** Parameter for 'votes' flag was not a channel mention or an invalid channel.").queue();
+				channel.sendMessage(":pancakes: **Invalid Arguments:** Parameter for 'channel' flag was not a channel mention or an invalid channel.").queue();
 				return;
 			}
 		}
@@ -104,16 +106,15 @@ public class CmdPoll extends BotCommand {
 			PollInfo info = new PollInfo(m, creator, title, message, expireMillis, clearresults);
 			polls.add(info);
 			savePolls();
-			MessageListener.addReactionHandler(m.getIdLong(), new PollReactionHandler(info));
+			BotMain.getBotCore().getCommandHandler().addReactionHandler(m.getIdLong(), new PollReactionHandler(info));
 			ReactionHandler.setReactions(m, options);
 		});
 	}
 	
-	public void editPollMessage(PollInfo info) {
-		if (BotMain.getJDA() == null) { return; }
-		User creator = BotMain.getJDA().getUserById(info.getCreatorId());
+	public void editPollMessage(PollInfo info, SJBotCore core) {
+		User creator = core.getShardManager().getUserById(info.getCreatorId());
 		
-		RestAction<Message> promise = info.getMessageInfo().getMessage(BotMain.getJDA());
+		RestAction<Message> promise = info.getMessageInfo().getMessage(core.getShardManager());
 		if (promise == null) { return; }
 		promise.queue(m -> {
 			m.editMessage(buildMessage(creator, info)).queue();
@@ -147,7 +148,7 @@ public class CmdPoll extends BotCommand {
 		}
 		embed.setTitle(title + expiresIn);
 		if (closed) {
-			Message m = info.getMessageInfo().getMessage(BotMain.getJDA()).complete();
+			Message m = info.getMessageInfo().getMessage(BotMain.getBotCore().getShardManager()).complete();
 			String results = "";
 			for (MessageReaction r : m.getReactions()) {
 				results += r.getReactionEmote().getName() + " - " + (r.getCount()-1) + "\n";
@@ -156,7 +157,7 @@ public class CmdPoll extends BotCommand {
 					
 			polls.remove(info);
 			savePolls();
-			MessageListener.removeReactionHandler(info.getMessageInfo().getMessageId());
+			BotMain.getBotCore().getCommandHandler().removeReactionHandler(info.getMessageInfo().getMessageId());
 			if (clearresults) {
 				m.clearReactions().queue();	
 			}
@@ -178,7 +179,7 @@ public class CmdPoll extends BotCommand {
 	//--//
 	public void savePolls() {
 		try {
-			BotMain.yamlMapper.writeValue(POLL_SAVE_FILE, polls);
+			YamlConfig.mapper.writeValue(POLL_SAVE_FILE, polls);
 		} catch (IOException e) {
 			e.printStackTrace();
 			System.out.println("Unable to WRITE the poll file... malformed list or IOException??");
@@ -187,9 +188,9 @@ public class CmdPoll extends BotCommand {
 	public void loadPolls() {
 		if (POLL_SAVE_FILE.exists()) {
 			try {
-				polls = new ArrayList<>(Arrays.asList(BotMain.yamlMapper.readValue(POLL_SAVE_FILE, PollInfo[].class)));
+				polls = new ArrayList<>(Arrays.asList(YamlConfig.mapper.readValue(POLL_SAVE_FILE, PollInfo[].class)));
 				for (PollInfo poll : polls) {
-					MessageListener.addReactionHandler(poll.getMessageInfo().getMessageId(), new PollReactionHandler(poll));
+					BotMain.getBotCore().getCommandHandler().addReactionHandler(poll.getMessageInfo().getMessageId(), new PollReactionHandler(poll));
 				}
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
@@ -206,13 +207,13 @@ public class CmdPoll extends BotCommand {
 		private String message = "";
 		private long creatorId = -1;
 		private long expireTimeMillis = -1;
-		private MessageInfoContainer messageInfo = null;
+		private MessageContainer messageInfo = null;
 		private boolean clearResults = false;
 		private long createdDate = -1;
 		
 		public PollInfo() {}
 		public PollInfo(Message poll, User creator, String title, String message, long expireTime, boolean clearresults) {
-			messageInfo = new MessageInfoContainer(poll);
+			messageInfo = new MessageContainer(poll);
 			this.title = title;
 			expireTimeMillis = expireTime;
 			this.message = message;
@@ -226,7 +227,7 @@ public class CmdPoll extends BotCommand {
 		public long getExpireTimeMillis() { return expireTimeMillis; }
 		public String getTitle() { return title; }
 		public boolean willClearResults() { return clearResults; }
-		public MessageInfoContainer getMessageInfo() { return messageInfo; }
+		public MessageContainer getMessageInfo() { return messageInfo; }
 		public long getCreatedDate() { return createdDate; }
 	}
 	public static class PollReactionHandler extends ReactionHandler {

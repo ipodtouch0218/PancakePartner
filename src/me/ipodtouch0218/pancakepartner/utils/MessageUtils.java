@@ -4,7 +4,8 @@ import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import me.ipodtouch0218.pancakepartner.BotMain;
+import me.ipodtouch0218.sjbotcore.SJBotCore;
+import me.ipodtouch0218.sjbotcore.util.MessageContainer;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.entities.TextChannel;
@@ -12,7 +13,7 @@ import net.dv8tion.jda.core.entities.User;
 
 public class MessageUtils {
 
-	private MessageUtils() {} 	//stops instance creation, static methods only.
+	private MessageUtils() {} //stops instance creation, static methods only.
 	
 	//--Mention Utils (@ping)--//
 	private static final Pattern mentionUserPattern = Pattern.compile("<@\\d+>");
@@ -30,28 +31,20 @@ public class MessageUtils {
 	}
 	
 	//returns user if the given string is a mention.
-	public static User getMentionedUser(String str) {
-		if (BotMain.getJDA() == null) {
-			//not yet connected to dsicord, we can't get any users.
-			return null;
-		}
+	public static User getMentionedUser(String str, SJBotCore core) {
 		if (!isUserMention(str)) {
 			//given string is not a mention, abort! jump ship!
 			return null;
 		}
 		
 		String userId = str.substring(2, str.length()-1);
-		User mentionedUser = BotMain.getJDA().getUserById(userId);
+		User mentionedUser = core.getShardManager().getUserById(userId);
 		
 		return mentionedUser;
 	}
 	
 	//returns all users mentioned within the string, in order.
-	public static User[] getMentionedUsers(String str) {
-		if (BotMain.getJDA() == null) {
-			//not yet connected to discord, we can't get any users
-			return null;
-		}
+	public static User[] getMentionedUsers(String str, SJBotCore core) {
 		if (!containsUserMention(str)) {
 			//given string is not a mention
 			return null;
@@ -61,7 +54,7 @@ public class MessageUtils {
 		ArrayList<User> matchedUsers = new ArrayList<>();
 		while (regexMatcher.find()) {
 			String mention = str.substring(regexMatcher.start(), regexMatcher.end());
-			User mentionedUser = getMentionedUser(mention);
+			User mentionedUser = getMentionedUser(mention, core);
 			matchedUsers.add(mentionedUser);
 		}
 		
@@ -76,18 +69,14 @@ public class MessageUtils {
 		return mentionChannelPattern.matcher(str.trim()).matches();
 	}
 	
-	public static TextChannel getMentionedChannel(String str) {
-		if (BotMain.getJDA() == null) {
-			//not yet connected to dsicord, we can't get any channels.
-			return null;
-		}
+	public static TextChannel getMentionedChannel(String str, SJBotCore core) {
 		if (!isChannelMention(str)) {
 			//given string is not a mention
 			return null;
 		}
 		
 		String channelId = str.substring(2, str.length()-1);
-		TextChannel channel = BotMain.getJDA().getTextChannelById(channelId);
+		TextChannel channel = core.getShardManager().getTextChannelById(channelId);
 		
 		return channel;
 	}
@@ -113,7 +102,7 @@ public class MessageUtils {
 	}
 	
 	//--stuff--//
-	public static MessageInfoContainer parseMessageURL(String url) {
+	public static MessageContainer parseMessageURL(String url) {
 		Matcher m = MiscUtils.PATTERN_MESSAGE_LINK.matcher(url);
 		m.find();
 		long guildid = -1;
@@ -122,6 +111,6 @@ public class MessageUtils {
 		}
 		long channelid = Long.parseLong(m.group("channel"));
 		long messageid = Long.parseLong(m.group("messageid"));
-		return new MessageInfoContainer(guildid, channelid, messageid);
+		return new MessageContainer(guildid, channelid, messageid);
 	}
 }

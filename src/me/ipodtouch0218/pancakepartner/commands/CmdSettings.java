@@ -1,13 +1,12 @@
-package me.ipodtouch0218.pancakepartner.commands.custom;
+package me.ipodtouch0218.pancakepartner.commands;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import me.ipodtouch0218.pancakepartner.BotMain;
-import me.ipodtouch0218.pancakepartner.commands.BotCommand;
-import me.ipodtouch0218.pancakepartner.commands.CommandFlag;
 import me.ipodtouch0218.pancakepartner.config.GuildSettings;
 import me.ipodtouch0218.pancakepartner.utils.MessageUtils;
+import me.ipodtouch0218.sjbotcore.command.BotCommand;
+import me.ipodtouch0218.sjbotcore.command.FlagSet;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.MessageChannel;
@@ -22,7 +21,7 @@ public class CmdSettings extends BotCommand {
 	}
 
 	@Override
-	public void execute(Message msg, String alias, ArrayList<String> args, HashMap<String,CommandFlag> flags) {
+	public void execute(Message msg, String alias, ArrayList<String> args, FlagSet flags) {
 		MessageChannel channel = msg.getChannel();
 		GuildSettings settings = BotMain.getGuildSettings(msg.getGuild());
 		
@@ -39,7 +38,7 @@ public class CmdSettings extends BotCommand {
 				switch (args.get(1)) {
 				case "add": {
 					if (MessageUtils.isUserMention(args.get(2))) {
-						User user = MessageUtils.getMentionedUser(args.get(2));
+						User user = MessageUtils.getMentionedUser(args.get(2), BotMain.getBotCore());
 						if (settings.isBotAdmin(user.getIdLong())) {
 							channel.sendMessage(":pancakes: This user is already a bot admin!").queue();
 							return;
@@ -54,7 +53,7 @@ public class CmdSettings extends BotCommand {
 				}
 				case "remove": {
 					if (MessageUtils.isUserMention(args.get(2))) {
-						User user = MessageUtils.getMentionedUser(args.get(2));
+						User user = MessageUtils.getMentionedUser(args.get(2), BotMain.getBotCore());
 						if (!settings.isBotAdmin(user.getIdLong())) {
 							channel.sendMessage(":pancakes: This user not already a bot admin!").queue();
 							return;
@@ -75,7 +74,7 @@ public class CmdSettings extends BotCommand {
 			}
 			String list = "";
 			for (long id : settings.getBotAdmins()) {
-				list += (MessageUtils.nameAndDiscrim(BotMain.getJDA().getUserById(id)) + "\n");
+				list += (MessageUtils.nameAndDiscrim(BotMain.getBotCore().getShardManager().getUserById(id)) + "\n");
 			}
 		
 			channel.sendMessage(":pancakes: List of all bot-admins in this guild: ```" + list + "```To add or remove users, use 'add' and 'remove' as command parameters.").queue();
@@ -108,7 +107,7 @@ public class CmdSettings extends BotCommand {
 				switch (args.get(1)) {
 				case "channel": {
 					if (MessageUtils.isChannelMention(args.get(2))) {
-						TextChannel newchannel = MessageUtils.getMentionedChannel(args.get(2));
+						TextChannel newchannel = MessageUtils.getMentionedChannel(args.get(2), BotMain.getBotCore());
 						
 						channel.sendMessage(":pancakes: Set " + MessageUtils.asChannelMention(newchannel) + " to be the starred message channel!").queue();
 						settings.setStarChannelID(newchannel.getIdLong());
@@ -137,7 +136,7 @@ public class CmdSettings extends BotCommand {
 			}
 			String list = "";
 			for (long id : settings.getBotAdmins()) {
-				list += (MessageUtils.nameAndDiscrim(BotMain.getJDA().getUserById(id)) + "\n");
+				list += (MessageUtils.nameAndDiscrim(BotMain.getBotCore().getShardManager().getUserById(id)) + "\n");
 			}
 		
 			channel.sendMessage(":pancakes: List of all bot-admins in this guild: ```" + list + "```To add or remove users, use 'add' and 'remove' as command parameters.").queue();
@@ -151,7 +150,7 @@ public class CmdSettings extends BotCommand {
 				switch (args.get(1)) {
 				case "channel": {
 					if (MessageUtils.isChannelMention(args.get(2))) {
-						TextChannel newchannel = MessageUtils.getMentionedChannel(args.get(2));
+						TextChannel newchannel = MessageUtils.getMentionedChannel(args.get(2), BotMain.getBotCore());
 						
 						channel.sendMessage(":pancakes: Set " + MessageUtils.asChannelMention(newchannel) + " to be the poll message channel!").queue();
 						settings.setPollChannelID(newchannel.getIdLong());
