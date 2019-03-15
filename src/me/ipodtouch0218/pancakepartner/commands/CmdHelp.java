@@ -10,6 +10,7 @@ import me.ipodtouch0218.pancakepartner.BotMain;
 import me.ipodtouch0218.pancakepartner.utils.MessageUtils;
 import me.ipodtouch0218.pancakepartner.utils.MiscUtils;
 import me.ipodtouch0218.sjbotcore.command.BotCommand;
+import me.ipodtouch0218.sjbotcore.command.FlagInfo;
 import me.ipodtouch0218.sjbotcore.command.FlagSet;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.Guild;
@@ -25,7 +26,8 @@ public class CmdHelp extends BotCommand {
 	public CmdHelp() {
 		super("help", true, true);
 		setHelpInfo("Provides either a list of commands or command-specific usage info.", "help [#|command]");
-		registerFlag("dm", 0);
+		
+		registerFlag("dm", 0, "Sends help info to your private DM instead of the current channel.");
 	}
 
 	//--//
@@ -97,7 +99,15 @@ public class CmdHelp extends BotCommand {
 		embed.setColor(Color.GREEN);
 		embed.setDescription("*Usage: " + cmdPrefix + cmd.getUsage() + "*");
 		embed.addField("Description", cmd.getDescription(), false);
+		if (!cmd.getFlags().isEmpty()) {
+			String flagList = "";
+			for (FlagInfo flags : cmd.getFlags()) {
+				flagList += ("**`-" + flags.getUsage() + "`** \u21D2 " + flags.getDescription() + "\n");
+			}
+			embed.addField("Flags", flagList.substring(0, flagList.length()-1), false);
+		}
 		embed.addField("Required Permission", (cmd.getPermission() == null ? "None" : cmd.getPermission().name()), false);
+		
 		
 		if (cmd.getAliases() != null) {
 			embed.addField("Aliases", Arrays.toString(cmd.getAliases()), false);

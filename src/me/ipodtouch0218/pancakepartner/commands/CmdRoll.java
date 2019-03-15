@@ -19,7 +19,7 @@ public class CmdRoll extends BotCommand {
 		setHelpInfo("Rolls a virtual dice or chooses an option from a list. Flags: -noduplicates", "roll <#|[item1,item2]> [# of rolls]");
 		setAliases("random");
 		
-		registerFlag("noduplicates", 0);
+		registerFlag("noduplicates", 0, "If duplicate rolls should be disabled.");
 	}
 
 	@Override
@@ -72,7 +72,7 @@ public class CmdRoll extends BotCommand {
 			if (allowDuplicates) {
 				
 				for (int i = 0; i < rollCount; i++) {
-					int nextElement = RAND.nextInt(sides);
+					int nextElement = RAND.nextInt(sides)+1;
 					if ((results + nextElement).length() > 1750) {
 						error = "*(Warning: Ran out of space to place results. " + (rollCount - rollsTaken) + " roll(s) were not performed.)*";
 						break;
@@ -93,7 +93,7 @@ public class CmdRoll extends BotCommand {
 			
 			randElements.addAll(Arrays.asList(splitParams));
 		} else {
-			channel.sendMessage(":pancakes: **Invalid Arguments:** Parameters don't match the proper format of either `d#` or `[1,2,3]`").queue();
+			channel.sendMessage(":pancakes: **Invalid Arguments:** Parameters don't match the proper format of either `[d]#` or `[1,2,3]`").queue();
 			return;
 		}
 		

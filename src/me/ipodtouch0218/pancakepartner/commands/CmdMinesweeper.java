@@ -19,9 +19,9 @@ public class CmdMinesweeper extends BotCommand {
 		setHelpInfo("Creates a playable game of minesweeper! FLAGS: \"-mobile\" and \"hint\". (X's are mines, max 13x13)", "minesweeper [[width] [height]] [mines]");
 		setAliases("mine", "mines");
 		
-		registerFlag("mobile", 0);
-		registerFlag("coords", 0);
-		registerFlag("hint", 0);
+		registerFlag("mobile", 0, "Adds spacing to improve accuracy on touch devices.");
+		registerFlag("coords", 0, "Includes a coordinate grid on the board.");
+		registerFlag("hint", 0, "Gives you a hint on where a free blank spot is.");
 	}
 
 	@Override
@@ -80,19 +80,8 @@ public class CmdMinesweeper extends BotCommand {
 			//no mines
 			info = "*No mines. What fun.*";
 		}
-		
-		boolean outputHint = flags.containsFlag("hint");
-		
-		char[][] board = generateMinesweeperBoard(boardwidth, boardheight, minecount, outputHint);
-		String hint = "";
-		if (outputHint) {
-			if (hintX == -1 || hintY == -1) {
-				hint = " HINT: There are no blank tiles! (good luck)";
-			} else {
-				hint = " HINT: (" + (hintX+1) + ", " + (hintY+1) + ") is blank!";
-			}
-		}
-		channel.sendMessage(":pancakes: **PancakeGames: Minesweeper** " + info + hint + "\n" + outputBoard(board, flags.containsFlag("mobile"), flags.containsFlag("coords"))).queue();
+		char[][] board = generateMinesweeperBoard(boardwidth, boardheight, minecount, flags.containsFlag("hint"));
+		channel.sendMessage(":pancakes: **PancakeGames: Minesweeper** " + info + "\n" + outputBoard(board, flags.containsFlag("mobile"), flags.containsFlag("coords"))).queue();
 	}
 	
 	private int hintX, hintY;
@@ -167,14 +156,20 @@ public class CmdMinesweeper extends BotCommand {
 				output.append(Character.toChars(9351 + (y+1)));
 			}
 			for (int x = 0; x < board.length; x++) {
-				output.append("||");
+				boolean show = (hintX == x && hintY == y);
+				if (!show) {
+					output.append("||");
+				}
 				char value = board[x][y];
 				if (value == 'X') {
 					output.append('\uFF38');
 				} else {
 					output.append(monospace_chars[board[x][y]]);
 				}
-				output.append("||" + (space ? " " : ""));
+				if (!show) {
+					output.append("||");
+				}
+				output.append(space ? " " : "");
 			}
 			output.append("\n");
 		}

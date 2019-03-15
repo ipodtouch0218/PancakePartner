@@ -28,12 +28,11 @@ public class CmdPoll extends BotCommand {
 	
 	public CmdPoll() {
 		super("poll", true, false, Permission.ADMINISTRATOR);
-		setHelpInfo("Creates a poll using reactions for people to answer.", "poll \"<message>\" <emoji1> [emoji2] [emoji3...]");
+		setHelpInfo("Creates a poll using reactions for people to answer.", "poll \"<title>\" \"<message>\" <emoji1> [emoji2] [emoji3...]");
 		
-		registerFlag("duration", 1);
-		registerFlag("title", 1);
-		registerFlag("channel", 1);
-		registerFlag("clearresults", 0);
+		registerFlag("duration", 1, "Sets the length for the poll to be open (in minutes)", "duration <time>");
+		registerFlag("channel", 1, "Outputs the poll to the specified channel.", "channel <#channel>");
+		registerFlag("clearresults", 0, "Clears reactions after the poll ends as to disable new votes.");
 		
 		loadPolls();
 		

@@ -17,8 +17,8 @@ import net.dv8tion.jda.core.entities.Guild;
 public class BotMain {
 
 	/* TODO:
-	 * Display possible flags in help command.
 	 * Clean up utils (in general)
+	 * Fix deprications with permissions system. (SJBotCore todo.)
 	 * 
 	 * Give javadocs to some more classes:
 	 * - MessageListener
@@ -50,7 +50,6 @@ public class BotMain {
 	private void buildBot() {
 		BotSettings settings = YamlConfig.loadConfig(configFile, BotSettings.class);
 		botCore = new SJBotCore(settings);
-		registerCommands();
 		try {
 			botCore.startBot();
 			botCore.getShardManager().addEventListener(new CustomListener());

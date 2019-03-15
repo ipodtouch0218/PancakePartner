@@ -168,6 +168,8 @@ public class CmdStar extends BotCommand {
 				m.addReaction("\u26D4").queue();
 				info.notificationMessages.put(m.getIdLong(), new MessageContainer(msg));
 				saveStarredMessages();
+			}, e -> {
+				
 			});
 		}, e -> {
 			msg.getChannel().sendMessage(":star: **Starred Message Notification:** <@" + msg.getAuthor().getId() + ">, your message at " + MessageUtils.getMessageURL(msg) 

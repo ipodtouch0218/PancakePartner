@@ -9,15 +9,20 @@
 	    <id>jitpack.io</id>
 	    <url>https://jitpack.io</url>
 	</repository>
+	<repository>
+      <id>jda-repo</id>
+      <url>http://jcenter.bintray.com</url>
+    </repository>
   </repositories>
   
   <dependencies>
 	<dependency>
 	    <groupId>com.github.ipodtouch0218</groupId>
 	    <artifactId>SJBotCore</artifactId>
-	    <version>6c4f4aa0c2172bdfbbf916188239ea85db41bd20</version>
+	    <version>fab7f8dedf096ce022fe9bbc35f3dc26d6dab164</version>
 	</dependency>
   </dependencies>
+
   
   <build>
     <sourceDirectory>src</sourceDirectory>
@@ -35,7 +40,7 @@
       <configuration>
         <archive>
           <manifest>
-            <mainClass>fully.qualified.MainClass</mainClass>
+            <mainClass>me.ipodtouch0218.pancakepartner.BotMain</mainClass>
           </manifest>
         </archive>
         <descriptorRefs>
