@@ -137,20 +137,28 @@ public class CmdStar extends BotCommand {
 		EmbedBuilder embed = new EmbedBuilder();
 		embed.setTitle("Starred Message - :star: " + starReactions);
 		embed.setColor(Color.ORANGE);
+		
 		embed.setDescription(m.getContentDisplay());
+		
 		embed.setFooter(MessageUtils.nameAndDiscrim(m.getAuthor()), m.getAuthor().getAvatarUrl());
 		embed.addField("\u200E", "[Direct Link](" + MessageUtils.getMessageURL(m) + ")", false);
 		embed.setTimestamp(m.getCreationTime());
 		if (!m.getAttachments().isEmpty()) {
-			for (Attachment attachment : m.getAttachments()) {
-				//TODO: fix video embeds
-				if (attachment.isImage() || attachment.getUrl().matches(".+\\.(mov|mp4)$")) {
-//					if (m.getContentDisplay().equals("") || m.getContentDisplay() == null) {
-						embed.setImage(attachment.getUrl());
-//					} else {
-//						embed.setThumbnail(attachment.getUrl());
-//					}
+			boolean attached = false;
+			for (MessageEmbed embeds : m.getEmbeds()) {
+				if (embeds.getImage() != null) {
+					embed.setImage(embeds.getImage().getUrl());
+					attached = true;
 					break;
+				}
+			}
+			if (!attached) {
+				for (Attachment attachment : m.getAttachments()) {
+					//TODO: fix video embeds
+					if (attachment.isImage() || attachment.getUrl().matches(".+\\\\\\.(mov|mp4)$")) {
+							embed.setImage(attachment.getUrl());
+						break;
+					}
 				}
 			}
 		}
@@ -161,9 +169,8 @@ public class CmdStar extends BotCommand {
 	//--Sending notifications to user--//
 	private static void sendNotificationMessage(Message msg) {
 		msg.getAuthor().openPrivateChannel().queue(ch -> {
-			ch.sendMessage(":star: **Starred Message Notification:** Your starred message (ID: " + msg.getId() + ") has been starred within \"" + msg.getGuild().getName() 
-					+ "\". ```" + msg.getContentDisplay() + "``` Message Link: " + MessageUtils.getMessageURL(msg) + "\nIf you do not want this message to be starred," 
-					+ "click the :no_entry: reaction under this mesasge to remove it.")
+			ch.sendMessage(String.format(":star: **Starred Message Notification:** Your starred message (ID: %d) has been starred within %s. \nMessage Link: %s",
+					msg.getIdLong(), msg.getGuild().getName(), MessageUtils.getMessageURL(msg)))
 			.queue(m -> {
 				m.addReaction("\u26D4").queue();
 				info.notificationMessages.put(m.getIdLong(), new MessageContainer(msg));

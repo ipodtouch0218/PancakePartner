@@ -123,12 +123,11 @@ public class CmdMinesweeper extends BotCommand {
 				}
 			}
 		}
-		
+
+		hintX = -1;
+		hintY = -1;
 		if (setHint) {
-			if (blankTiles.isEmpty()) {
-				hintX = -1;
-				hintY = -1;
-			} else {
+			if (!blankTiles.isEmpty()) {
 				Pair<Integer,Integer> rand = blankTiles.get((int) (Math.random()*blankTiles.size()));
 				hintX = rand.getLeft();
 				hintY = rand.getRight();

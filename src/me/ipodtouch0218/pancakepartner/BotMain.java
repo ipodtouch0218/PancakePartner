@@ -21,11 +21,8 @@ public class BotMain {
 	 * Fix deprications with permissions system. (SJBotCore todo.)
 	 * 
 	 * Give javadocs to some more classes:
-	 * - MessageListener
-	 * - ReactionHandler
 	 * - BotSettings
 	 * - Finish BotMain
-	 * - Finish CommandHandler
 	 */
 	
 	//PROGRAM START
@@ -60,7 +57,8 @@ public class BotMain {
 	
 	private void registerCommands() {
 		BotCommand[] commands = {new CmdSettings(), new CmdPing(), new CmdHelp(),
-				new CmdMinesweeper(), new CmdStar(), new CmdRoll(), new CmdPoll()};
+				new CmdMinesweeper(), new CmdStar(), new CmdRoll(), new CmdPoll(),
+				new CmdBotInfo(), new CmdPurge()};
 		Arrays.stream(commands).forEach(cmd -> botCore.registerCommand(cmd));
 	}
 	

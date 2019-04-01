@@ -28,6 +28,7 @@ public class CmdPing extends BotCommand {
 		msg.getChannel().sendMessage(":pancakes: **" + reply + "** Shard ID" + msg.getJDA().getShardInfo().getShardId() + " (of " + 
 				m.getShardsTotal() + ") `" + msg.getJDA().getPing() + "ms`. (Average of all shards: `" +
 				m.getAveragePing() + "ms`)").queue();
+		
 	}
 
 }

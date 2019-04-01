@@ -15,11 +15,29 @@
     </repository>
   </repositories>
   
-  <dependencies>
+  <!--  <dependencies>
 	<dependency>
 	    <groupId>com.github.ipodtouch0218</groupId>
 	    <artifactId>SJBotCore</artifactId>
-	    <version>fab7f8dedf096ce022fe9bbc35f3dc26d6dab164</version>
+	    <version>8570de2b349f71f2035f4cce7e2ea4ee102bfdfb</version>
+	</dependency>
+  </dependencies> -->
+  <dependencies>
+     <dependency>
+      <groupId>net.dv8tion</groupId>
+      <artifactId>JDA</artifactId>
+      <version>3.7.1_398</version>
+      <scope>compile</scope>
+    </dependency>
+	<dependency>
+	  <groupId>com.fasterxml.jackson.core</groupId>
+	  <artifactId>jackson-databind</artifactId>
+	  <version>2.9.8</version>
+	</dependency>
+	<dependency>
+  	  <groupId>com.fasterxml.jackson.dataformat</groupId>
+  	  <artifactId>jackson-dataformat-yaml</artifactId>
+  	  <version>2.9.2</version>
 	</dependency>
   </dependencies>
 

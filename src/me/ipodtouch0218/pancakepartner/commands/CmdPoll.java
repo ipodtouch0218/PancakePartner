@@ -96,6 +96,7 @@ public class CmdPoll extends BotCommand {
 			return;
 		}
 		
+		channel.sendMessage("`" + Arrays.toString(options) + "`").queue();
 		createPollMessage(postChannel, msg.getAuthor(), title, message, expireMillis, clearresults, options);
 	}
 	
@@ -187,7 +188,13 @@ public class CmdPoll extends BotCommand {
 	public void loadPolls() {
 		if (POLL_SAVE_FILE.exists()) {
 			try {
-				polls = new ArrayList<>(Arrays.asList(YamlConfig.mapper.readValue(POLL_SAVE_FILE, PollInfo[].class)));
+				PollInfo[] existing = YamlConfig.mapper.readValue(POLL_SAVE_FILE, PollInfo[].class);
+				if (existing != null) {
+					polls = new ArrayList<>(Arrays.asList(existing));
+				} else {
+					polls = new ArrayList<>();
+				}
+				
 				for (PollInfo poll : polls) {
 					BotMain.getBotCore().getCommandHandler().addReactionHandler(poll.getMessageInfo().getMessageId(), new PollReactionHandler(poll));
 				}
