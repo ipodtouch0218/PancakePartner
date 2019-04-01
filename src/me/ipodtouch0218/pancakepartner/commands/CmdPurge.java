@@ -23,6 +23,7 @@ public class CmdPurge extends BotCommand {
 	public CmdPurge() {
 		super("purge", true, false, Permission.MESSAGE_MANAGE);
 		setHelpInfo("Deletes previous commands matching specific criteria.", "purge <amount>");
+		setAliases("delet");
 		
 		registerFlag("user", 1, "Deletes messages from a specific user.");
 		registerFlag("regex", 1, String.format("Deletes messages matching a [regex](%s)", regexHelp));

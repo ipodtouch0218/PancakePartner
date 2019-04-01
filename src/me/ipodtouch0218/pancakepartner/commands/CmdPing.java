@@ -20,14 +20,15 @@ public class CmdPing extends BotCommand {
 	@Override
 	public void execute(Message msg, String alias, ArrayList<String> arguments, FlagSet flags) {
 		String reply = "Pong~!";
-		if (alias.equalsIgnoreCase("pong")) {
-			reply = "... Ping?";
+		switch (alias.toLowerCase()) {
+		case "pong": { reply = "... Ping?"; break; }
 		}
 		ShardManager m = BotMain.getBotCore().getShardManager();
 		
-		msg.getChannel().sendMessage(":pancakes: **" + reply + "** Shard ID" + msg.getJDA().getShardInfo().getShardId() + " (of " + 
-				m.getShardsTotal() + ") `" + msg.getJDA().getPing() + "ms`. (Average of all shards: `" +
-				m.getAveragePing() + "ms`)").queue();
+		String message = String.format(":pancakes: **%s** \\|\\| Shard: `%dms` | Average: `%.0fms`",
+				reply, msg.getJDA().getPing(), m.getAveragePing());
+
+		msg.getChannel().sendMessage(message).queue();
 		
 	}
 
