@@ -155,7 +155,7 @@ public class CmdStar extends BotCommand {
 			if (!attached) {
 				for (Attachment attachment : m.getAttachments()) {
 					//TODO: fix video embeds
-					if (attachment.isImage() || attachment.getUrl().matches(".+\\\\\\.(mov|mp4)$")) {
+					if (attachment.isImage() || attachment.getUrl().matches(".*\\.(mov|mp4)$")) {
 							embed.setImage(attachment.getUrl());
 						break;
 					}
@@ -168,20 +168,26 @@ public class CmdStar extends BotCommand {
 	
 	//--Sending notifications to user--//
 	private static void sendNotificationMessage(Message msg) {
-		msg.getAuthor().openPrivateChannel().queue(ch -> {
-			ch.sendMessage(String.format(":star: **Starred Message Notification:** Your starred message (ID: %d) has been starred within %s. \nMessage Link: %s",
-					msg.getIdLong(), msg.getGuild().getName(), MessageUtils.getMessageURL(msg)))
-			.queue(m -> {
-				m.addReaction("\u26D4").queue();
-				info.notificationMessages.put(m.getIdLong(), new MessageContainer(msg));
-				saveStarredMessages();
+		User author = msg.getAuthor();
+		try {
+			msg.getAuthor().openPrivateChannel().queue(ch -> {
+				ch.sendMessage(String.format(":star: **Starred Message Notification:** Your starred message (ID: %d) has been starred within %s. \nMessage Link: %s",
+						msg.getIdLong(), msg.getGuild().getName(), MessageUtils.getMessageURL(msg)))
+				.queue(m -> {
+					m.addReaction("\u26D4").queue();
+					info.notificationMessages.put(m.getIdLong(), new MessageContainer(msg));
+					saveStarredMessages();
+				}, e -> {
+					
+				});
 			}, e -> {
-				
+				msg.getChannel().sendMessage(":star: **Starred Message Notification:** <@" + author.getId() + ">, your message at " + MessageUtils.getMessageURL(msg) 
+						+ " was starred, however I can't open a dm with you, so I couldn't send you a notification there.").queue();
 			});
-		}, e -> {
-			msg.getChannel().sendMessage(":star: **Starred Message Notification:** <@" + msg.getAuthor().getId() + ">, your message at " + MessageUtils.getMessageURL(msg) 
-					+ " was starred, however I can't open a dm with you, so I couldn't send you a notification there.").queue();
-		});
+		} catch (Exception e) {
+			msg.getChannel().sendMessage(":star: **Starred Message Notification:** <@" + author.getId() + ">, your message at " + MessageUtils.getMessageURL(msg) 
+			+ " was starred, however I can't open a dm with you, so I couldn't send you a notification there.").queue();
+		}
 	}
 	
 	//--Loading and Saving-//

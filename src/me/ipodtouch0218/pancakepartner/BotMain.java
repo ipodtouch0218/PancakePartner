@@ -58,7 +58,7 @@ public class BotMain {
 	private void registerCommands() {
 		BotCommand[] commands = {new CmdSettings(), new CmdPing(), new CmdHelp(),
 				new CmdMinesweeper(), new CmdStar(), new CmdRoll(), new CmdPoll(),
-				new CmdBotInfo(), new CmdPurge()};
+				new CmdBotInfo(), new CmdPurge(), new CmdTextFormat()};
 		Arrays.stream(commands).forEach(cmd -> botCore.registerCommand(cmd));
 	}
 	

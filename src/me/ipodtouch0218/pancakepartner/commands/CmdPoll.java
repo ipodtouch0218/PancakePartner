@@ -72,27 +72,27 @@ public class CmdPoll extends BotCommand {
 		
 		long expireMillis = -1;
 		boolean clearresults = flags.containsFlag("clearresults");
-		if (flags.containsFlag("duration")) {
-			try {
-				int minutes = Integer.parseInt(flags.getFlag("duration").get().getParameters()[0]);
-				expireMillis = System.currentTimeMillis() + (minutes * 60 * 1000);
-			} catch (NumberFormatException e) {
-				channel.sendMessage(":pancakes: **Invalid Arguments:** Parameter for 'duration' flag was not a number (NOTE: duration is in MINUTES).").queue();
-				return;
-			}
+		
+		try {
+			expireMillis = flags.getFlag("duration")
+				.map(f -> System.currentTimeMillis() + (Integer.parseInt(f.getParameters()[0]) * 60 * 1000))
+				.orElse(-1l);
+		} catch (NumberFormatException e) {
+			channel.sendMessage(":pancakes: **Invalid Arguments:** Parameter for 'duration' flag was not a number (NOTE: duration is in MINUTES).").queue();
+			return;
 		}
 
 		GuildSettings settings = BotMain.getGuildSettings(msg.getGuild());
-		MessageChannel postChannel = BotMain.getBotCore().getShardManager().getTextChannelById(settings.getPollChannelID());
-		if (flags.containsFlag("channel")) {
-			postChannel = MessageUtils.getMentionedChannel(flags.getFlag("channel").get().getParameters()[0], BotMain.getBotCore());
-			if (postChannel == null) {
-				channel.sendMessage(":pancakes: **Invalid Arguments:** Parameter for 'channel' flag was not a channel mention or an invalid channel.").queue();
-				return;
-			}
-		}
+		MessageChannel postChannel = flags.getFlag("channel")
+				.map(f -> MessageUtils.getMentionedChannel(f.getParameters()[0], BotMain.getBotCore()))
+				.orElse(BotMain.getBotCore().getShardManager().getTextChannelById(settings.getPollChannelID()));
+		
 		if (postChannel == null) {
-			channel.sendMessage(":pancakes: **Invalid Arguments:** Channel for polls is unset! Use `settings poll channel <#channel>` to set it!").queue();
+			if (flags.containsFlag("channel")) {
+				channel.sendMessage(":pancakes: **Invalid Arguments:** Parameter for 'channel' flag was not a channel mention or an invalid channel.").queue();
+			} else {
+				channel.sendMessage(":pancakes: **Invalid Arguments:** Channel for polls is unset! Use `settings poll channel <#channel>` to set it or use the `-channel` flag!").queue();
+			}
 			return;
 		}
 		
