@@ -41,9 +41,9 @@ public class CmdBotInfo extends BotCommand {
 		embed.addField(":chart_with_upwards_trend:  Statistics", String.format("Users: %d | Guilds: %d", manager.getUsers().size(), manager.getGuilds().size()), true);
 		embed.addField(":small_blue_diamond: Shard Info", String.format("Shard: %d out of %d shard(s)", currentJDA.getShardInfo().getShardId()+1, currentJDA.getShardInfo().getShardTotal()), true);
 		embed.addField(":pencil: Memory Usage", String.format("%dMB / %dMB", ramUsed, ramMax), true);
-		embed.addField(":stopwatch: Ping", String.format("Shard: %dms | Average: %.0fms", currentJDA.getPing(), manager.getAveragePing()), true);
+		embed.addField(":stopwatch: Ping", String.format("Shard: %dms | Avg: %.0fms", currentJDA.getPing(), manager.getAveragePing()), true);
 		
-		embed.addField(":link: Links", String.format("[Source Code (Github)](%s)\n[Invite Link](%s)", githubLink, inviteLink), false);
+		embed.addField(":link: Links", String.format("[Source Code (Github)](%s)\n[Invite Link](%s)", githubLink, inviteLink), true);
 		
 		embed.setFooter("Requested By: " + MessageUtils.nameAndDiscrim(requester), requester.getAvatarUrl());
 		embed.setTimestamp(Instant.now());

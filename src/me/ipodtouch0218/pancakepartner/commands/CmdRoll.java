@@ -16,7 +16,7 @@ public class CmdRoll extends BotCommand {
 	
 	public CmdRoll() {
 		super("roll", true, true);
-		setHelpInfo("Rolls a virtual dice or chooses an option from a list. Flags: -noduplicates", "roll <#|[item1,item2]> [# of rolls]");
+		setHelpInfo("Rolls a virtual dice or chooses an option from a list.", "roll <#|[item1,item2]> [# of rolls]");
 		setAliases("random");
 		
 		registerFlag("noduplicates", 0, "If duplicate rolls should be disabled.");

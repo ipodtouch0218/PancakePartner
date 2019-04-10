@@ -81,7 +81,7 @@ public class BotMain {
 	 */
 	public static GuildSettings getGuildSettings(Guild guild) { return getGuildSettings(guild.getIdLong()); }
 	/**
-	 * Returns guild-specfic settings which Bot Administrators can set using {@link CmdSettings}
+	 * Returns guild-specific settings which Bot Administrators can set using {@link CmdSettings}
 	 * @param id - Guild ID to retrieve settings for.
 	 * @return {@link Guildsettings} instance for the given guild.
 	 */

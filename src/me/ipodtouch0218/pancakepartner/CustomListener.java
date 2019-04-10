@@ -14,7 +14,7 @@ import net.dv8tion.jda.core.hooks.ListenerAdapter;
 public class CustomListener extends ListenerAdapter {
 
 	private static final String STAR_REACTION = "\u2B50";
-	private static final String REMOVE_REACTION = new String(Character.toChars(0x1F6AB));
+	private static final String REMOVE_REACTION = new String(Character.toChars(0x1F6AB));	
 	
 	@Override
 	public void onGenericMessageReaction(GenericMessageReactionEvent e) {

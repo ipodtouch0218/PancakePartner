@@ -35,7 +35,7 @@ public class CmdTextFormat extends BotCommand {
 		}
 		if (format == null) {
 			String possibleformats = Arrays.toString(formats);
-			possibleformats = possibleformats.substring(1, possibleformats.length()-2);
+			possibleformats = possibleformats.substring(1, possibleformats.length()-1);
 			channel.sendMessage(String.format(":pancakes: **Invalid Arguments:** '%s' is not a valid formatter type. Possible formats: `%s`", formatStr, possibleformats)).queue();
 			return;
 		}
@@ -88,7 +88,8 @@ public class CmdTextFormat extends BotCommand {
 			}
 		};
 		static final TextFormatter SMALLTEXT = new TextFormatter("smallcaps") {
-			private final int[] chars = {7424,665,7428,7429,7431,1171,610,668,618,7434,7435,671,7437,628,7439,7448,491,640,115,7451,7452,7456,7457,120,655,7458};
+			private final int[] chars = {7424,665,7428,7429,7431,1171,610,668,618,7434,7435,671,7437,628,7439,
+					7448,491,640,115,7451,7452,7456,7457,120,655,7458};
 			public String formatText(String in) {
 				StringBuilder modifier = new StringBuilder(in);
 				for (int i = 0; i < modifier.length(); i++) {

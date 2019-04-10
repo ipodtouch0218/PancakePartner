@@ -16,7 +16,7 @@ public class CmdMinesweeper extends BotCommand {
 	
 	public CmdMinesweeper() {
 		super("minesweeper", true, true);
-		setHelpInfo("Creates a playable game of minesweeper! FLAGS: \"-mobile\" and \"hint\". (X's are mines, max 13x13)", "minesweeper [[width] [height]] [mines]");
+		setHelpInfo("Creates a playable game of minesweeper! (X's are mines, max size 13x13)", "minesweeper [[width] [height]] [mines]");
 		setAliases("mine", "mines");
 		
 		registerFlag("mobile", 0, "Adds spacing to improve accuracy on touch devices.");
@@ -73,7 +73,9 @@ public class CmdMinesweeper extends BotCommand {
 			//negative amount of mines
 			channel.sendMessage(":pancakes: **Invalid Arguments:** Invalid mine count! (cannot have negative mines!?)").queue();
 			return;
-		} else if (minecount == boardwidth*boardheight) {
+		} 
+		
+		if (minecount == boardwidth*boardheight) {
 			//mines = available spaces
 			info = "*Only mines? How do you win!?*";
 		} else if (minecount == 0) {

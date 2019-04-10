@@ -21,7 +21,7 @@ import net.dv8tion.jda.core.entities.User;
 public class CmdHelp extends BotCommand {
 
 	//--Variables & Constructor--//
-	private static final int cmdsPerPage = 6;
+	private static final int cmdsPerPage = 8;
 	
 	public CmdHelp() {
 		super("help", true, true);
@@ -81,7 +81,8 @@ public class CmdHelp extends BotCommand {
 			BotCommand nextCmd = allCmds[i + (pagenumber * cmdsPerPage)];
 
 			String title = nextCmd.getName();
-			page.addField(title, nextCmd.getDescription(), true);
+			page.addField(title, nextCmd.getDescription(), false);
+//			page.addField(title, "\t" + nextCmd.getUsage(), false);
 		}
 		page.setFooter("Requested by " + MessageUtils.nameAndDiscrim(sender), sender.getAvatarUrl()).setTimestamp(Instant.now());
 		
@@ -106,12 +107,18 @@ public class CmdHelp extends BotCommand {
 			}
 			embed.addField("Flags", flagList.substring(0, flagList.length()-1), false);
 		}
-		embed.addField("Required Permission", (cmd.getPermission() == null ? "None" : cmd.getPermission().name()), false);
+		embed.addField("Permission", (cmd.getPermission() == null ? "None" : cmd.getPermission().name()), true);
 		
-		
+		String aliases = "None";
+		String aliastitle = "Aliases";
 		if (cmd.getAliases() != null) {
-			embed.addField("Aliases", Arrays.toString(cmd.getAliases()), false);
+			aliases = Arrays.toString(cmd.getAliases());
+			if (cmd.getAliases().length == 1) {
+				aliastitle = "Alias";
+			}
 		}
+		embed.addField(aliastitle, aliases, true);
+		
 		embed.setFooter("Requested by " + MessageUtils.nameAndDiscrim(sender), sender.getAvatarUrl()).setTimestamp(Instant.now());
 		
 		channel.sendMessage(embed.build()).queue();
