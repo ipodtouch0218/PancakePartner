@@ -2,9 +2,11 @@ package me.ipodtouch0218.pancakepartner.commands;
 
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 
 import me.ipodtouch0218.pancakepartner.BotMain;
 import me.ipodtouch0218.pancakepartner.utils.MessageUtils;
+import me.ipodtouch0218.pancakepartner.utils.MiscUtils;
 import me.ipodtouch0218.sjbotcore.command.BotCommand;
 import me.ipodtouch0218.sjbotcore.command.FlagSet;
 import net.dv8tion.jda.bot.sharding.ShardManager;
@@ -42,7 +44,11 @@ public class CmdBotInfo extends BotCommand {
 		embed.addField(":small_blue_diamond: Shard Info", String.format("Shard: %d out of %d shard(s)", currentJDA.getShardInfo().getShardId()+1, currentJDA.getShardInfo().getShardTotal()), true);
 		embed.addField(":pencil: Memory Usage", String.format("%dMB / %dMB", ramUsed, ramMax), true);
 		embed.addField(":stopwatch: Ping", String.format("Shard: %dms | Avg: %.0fms", currentJDA.getPing(), manager.getAveragePing()), true);
-		
+		{
+			long elapsed = System.currentTimeMillis() - BotMain.getStartupTime();
+			String elapsedStr = MiscUtils.timeElapsed(TimeUnit.MILLISECONDS, elapsed, TimeUnit.DAYS, TimeUnit.HOURS, TimeUnit.MINUTES, TimeUnit.SECONDS);
+			embed.addField(":timer: Uptime", elapsedStr, true);
+		}
 		embed.addField(":link: Links", String.format("[Source Code (Github)](%s)\n[Invite Link](%s)", githubLink, inviteLink), true);
 		
 		embed.setFooter("Requested By: " + MessageUtils.nameAndDiscrim(requester), requester.getAvatarUrl());

@@ -1,4 +1,4 @@
-package me.ipodtouch0218.pancakepartner.commands;
+package me.ipodtouch0218.pancakepartner.commands.games;
 
 import java.util.ArrayList;
 import java.util.Random;

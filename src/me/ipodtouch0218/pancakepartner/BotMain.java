@@ -7,6 +7,7 @@ import java.util.HashMap;
 import javax.security.auth.login.LoginException;
 
 import me.ipodtouch0218.pancakepartner.commands.*;
+import me.ipodtouch0218.pancakepartner.commands.games.CmdMinesweeper;
 import me.ipodtouch0218.pancakepartner.config.GuildSettings;
 import me.ipodtouch0218.sjbotcore.SJBotCore;
 import me.ipodtouch0218.sjbotcore.command.BotCommand;
@@ -14,11 +15,12 @@ import me.ipodtouch0218.sjbotcore.files.BotSettings;
 import me.ipodtouch0218.sjbotcore.files.YamlConfig;
 import net.dv8tion.jda.core.entities.Guild;
 
-public class BotMain {
+public class BotMain  {
 
 	/* TODO:
 	 * Clean up utils (in general)
 	 * Fix deprications with permissions system. (SJBotCore todo.)
+	 * Remove static methods and only use instance ones.
 	 * 
 	 * Give javadocs to some more classes:
 	 * - BotSettings
@@ -34,9 +36,10 @@ public class BotMain {
 	///INSTANCE STUFF
 	//--Variables & Constructor--//
 	private final File configFile = new File("config.yml");
-	
+	private static long startupTime;
 	private static SJBotCore botCore;
 	private static HashMap<Long, GuildSettings> guildSettings = new HashMap<>(); //settings used per guild.
+	
 	
 	public BotMain() {
 		buildBot();
@@ -53,6 +56,7 @@ public class BotMain {
 		} catch (IllegalArgumentException | LoginException e) {
 			e.printStackTrace();
 		}
+		startupTime = System.currentTimeMillis();
 	}
 	
 	private void registerCommands() {
@@ -71,6 +75,7 @@ public class BotMain {
 	}
 
 	//--Getters--//
+	public static long getStartupTime() { return startupTime; }
 	public static SJBotCore getBotCore() { return botCore; }
 	/**
 	 * Returns guild-specific settings which Bot Administrators can set using {@link CmdSettings}

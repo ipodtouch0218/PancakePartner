@@ -1,5 +1,8 @@
 package me.ipodtouch0218.pancakepartner.utils;
 
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
 public class MiscUtils {
@@ -25,5 +28,28 @@ public class MiscUtils {
 			result[i-start] = i;
 		}
 		return result;
+	}
+	
+	private static final Comparator<TimeUnit> timeCompare = new Comparator<TimeUnit>() {
+		public int compare(TimeUnit o1, TimeUnit o2) {
+			return o2.compareTo(o1);
+		}
+	};
+	
+	public static String timeElapsed(TimeUnit differenceUnit, long difference, TimeUnit... displayUnits) {
+		if (displayUnits.length <= 0) { return ""; }
+		Arrays.sort(displayUnits, timeCompare);
+		String output = "";
+		boolean blank = true;
+		for (int i = 0; i < displayUnits.length; i++) {
+			TimeUnit unit = displayUnits[i];
+			long amount = unit.convert(difference, differenceUnit);
+			if (amount > 0 || (i >= (displayUnits.length-1) && blank)) {
+				output += (amount + " " + (unit.toString().substring(0, unit.toString().length()-(amount == 1 ? 1 : 0))) + " ");
+				blank = false;
+			}
+			difference -= differenceUnit.convert(amount, unit);
+		}
+		return output.trim().toLowerCase();
 	}
 }
