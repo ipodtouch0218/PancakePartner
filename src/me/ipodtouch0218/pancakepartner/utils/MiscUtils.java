@@ -45,11 +45,17 @@ public class MiscUtils {
 			TimeUnit unit = displayUnits[i];
 			long amount = unit.convert(difference, differenceUnit);
 			if (amount > 0 || (i >= (displayUnits.length-1) && blank)) {
-				output += (amount + " " + (unit.toString().substring(0, unit.toString().length()-(amount == 1 ? 1 : 0))) + " ");
+				//TODO: enum name instead of prefix toggle
+//				output += (amount + " " + (unit.toString().substring(0, unit.toString().length()-(amount == 1 ? 1 : 0))) + " ");
+				output += (amount + timeUnitToPrefix(unit) + " ");
 				blank = false;
 			}
 			difference -= differenceUnit.convert(amount, unit);
 		}
 		return output.trim().toLowerCase();
+	}
+	private static final String[] unitPrefixes = {"ns","\u03BCs","ms","s","m","h","d"};
+	private static String timeUnitToPrefix(TimeUnit unit) {
+		return unitPrefixes[unit.ordinal()];
 	}
 }
