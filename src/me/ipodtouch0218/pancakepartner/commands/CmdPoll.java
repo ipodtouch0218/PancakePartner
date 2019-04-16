@@ -5,10 +5,12 @@ import java.io.IOException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.concurrent.TimeUnit;
 
 import me.ipodtouch0218.pancakepartner.BotMain;
 import me.ipodtouch0218.pancakepartner.config.GuildSettings;
 import me.ipodtouch0218.pancakepartner.utils.MessageUtils;
+import me.ipodtouch0218.pancakepartner.utils.MiscUtils;
 import me.ipodtouch0218.sjbotcore.SJBotCore;
 import me.ipodtouch0218.sjbotcore.command.BotCommand;
 import me.ipodtouch0218.sjbotcore.command.FlagSet;
@@ -136,14 +138,9 @@ public class CmdPoll extends BotCommand {
 				expiresIn = " - Poll Closed!";
 				closed = true;
 			} else {
-				int s = (int) (expireTimeMillis - System.currentTimeMillis())/(1000);
-				int m = s/60;
-				int h = m/60;
-				int d = h/24;
-				s%=60;
-				m%=60;
-				h%=24;
-				expiresIn = " - Expires in " + (d>0? d+"D " : "") + (h>0? h+"H " : "") + m + "M " + s + "S";
+				String remaining = MiscUtils.timeElapsed(TimeUnit.MILLISECONDS, expireTimeMillis - System.currentTimeMillis(), 
+						TimeUnit.DAYS, TimeUnit.HOURS, TimeUnit.MINUTES, TimeUnit.SECONDS);
+				expiresIn = " - Expires in " + remaining;
 			}
 		}
 		embed.setTitle(title + expiresIn);
