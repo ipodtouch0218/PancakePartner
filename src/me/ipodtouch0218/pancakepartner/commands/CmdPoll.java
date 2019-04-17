@@ -1,5 +1,6 @@
 package me.ipodtouch0218.pancakepartner.commands;
 
+import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
 import java.time.Instant;
@@ -130,13 +131,14 @@ public class CmdPoll extends BotCommand {
 	private MessageEmbed buildMessage(User creator, String title, String message, long expireTimeMillis, boolean clearresults, PollInfo info) {
 		EmbedBuilder embed = new EmbedBuilder();
 		
-		embed.setColor(15074559);
+		embed.setColor(1752220);
 		boolean closed = false;
 		String expiresIn = "";
 		if (expireTimeMillis != -1) {
 			if (expireTimeMillis < System.currentTimeMillis()) {
 				expiresIn = " - Poll Closed!";
 				closed = true;
+				embed.setColor(Color.RED);
 			} else {
 				String remaining = MiscUtils.timeElapsed(TimeUnit.MILLISECONDS, expireTimeMillis - System.currentTimeMillis(), 
 						TimeUnit.DAYS, TimeUnit.HOURS, TimeUnit.MINUTES, TimeUnit.SECONDS);

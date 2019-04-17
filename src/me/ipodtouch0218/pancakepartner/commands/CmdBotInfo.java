@@ -24,7 +24,7 @@ public class CmdBotInfo extends BotCommand {
 	public CmdBotInfo() {
 		super("botinfo", true, true);
 		setHelpInfo("Provides information about the current bot processes", "info");
-		setAliases("stats", "info");
+		setAliases("stats", "info", "uptime");
 	}
 
 	@Override
@@ -39,7 +39,7 @@ public class CmdBotInfo extends BotCommand {
 		long ramMax = Runtime.getRuntime().totalMemory() / (1024 * 1024);
 		long ramUsed = ramMax - (Runtime.getRuntime().freeMemory() / (1024 * 1024));
 		embed.setTitle(":pancakes: PancakePartner Info");
-		embed.setColor(6881196);
+		embed.setColor(1752220);
 		embed.addField(":chart_with_upwards_trend:  Statistics", String.format("Users: %d | Guilds: %d", manager.getUsers().size(), manager.getGuilds().size()), true);
 		embed.addField(":small_blue_diamond: Shard Info", String.format("Shard: %d out of %d shard(s)", currentJDA.getShardInfo().getShardId()+1, currentJDA.getShardInfo().getShardTotal()), true);
 		embed.addField(":pencil: Memory Usage", String.format("%dMB / %dMB", ramUsed, ramMax), true);

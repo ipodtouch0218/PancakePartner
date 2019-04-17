@@ -68,7 +68,7 @@ public class CmdHelp extends BotCommand {
 	private static void outputPagedCommandList(MessageChannel channel, int pagenumber, User sender, Message override) {
 
 		BotCommand[] allCmds = BotMain.getBotCore().getCommandHandler().getAllCommands().toArray(new BotCommand[]{});
-		int maxpages = ((allCmds.length-1)/cmdsPerPage);
+		int maxpages = (allCmds.length-1)/cmdsPerPage;
 		if (pagenumber > maxpages) { 
 			pagenumber = maxpages;
 		}
@@ -82,7 +82,6 @@ public class CmdHelp extends BotCommand {
 
 			String title = nextCmd.getName();
 			page.addField(title, nextCmd.getDescription(), false);
-//			page.addField(title, "\t" + nextCmd.getUsage(), false);
 		}
 		page.setFooter("Requested by " + MessageUtils.nameAndDiscrim(sender), sender.getAvatarUrl()).setTimestamp(Instant.now());
 		
@@ -97,7 +96,7 @@ public class CmdHelp extends BotCommand {
 		
 		EmbedBuilder embed = new EmbedBuilder();
 		embed.setTitle(":pancakes: **Command Help:** `" + cmd.getName() + "`");
-		embed.setColor(Color.GREEN);
+		embed.setColor(1752220);
 		embed.setDescription("*Usage: " + cmdPrefix + cmd.getUsage() + "*");
 		embed.addField("Description", cmd.getDescription(), false);
 		if (!cmd.getFlags().isEmpty()) {
@@ -109,15 +108,8 @@ public class CmdHelp extends BotCommand {
 		}
 		embed.addField("Permission", (cmd.getPermission() == null ? "None" : cmd.getPermission().name()), true);
 		
-		String aliases = "None";
-		String aliastitle = "Aliases";
-		if (cmd.getAliases() != null) {
-			aliases = Arrays.toString(cmd.getAliases());
-			if (cmd.getAliases().length == 1) {
-				aliastitle = "Alias";
-			}
-		}
-		embed.addField(aliastitle, aliases, true);
+		String aliases = cmd.getAliases().map(Arrays::toString).orElse("None");
+		embed.addField("Aliases", aliases, true);
 		
 		embed.setFooter("Requested by " + MessageUtils.nameAndDiscrim(sender), sender.getAvatarUrl()).setTimestamp(Instant.now());
 		
