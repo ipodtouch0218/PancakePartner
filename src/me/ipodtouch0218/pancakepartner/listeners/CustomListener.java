@@ -1,5 +1,6 @@
-package me.ipodtouch0218.pancakepartner;
+package me.ipodtouch0218.pancakepartner.listeners;
 
+import me.ipodtouch0218.pancakepartner.BotMain;
 import me.ipodtouch0218.pancakepartner.commands.CmdStar;
 import me.ipodtouch0218.pancakepartner.commands.CmdStar.StarredMessageInfo;
 import me.ipodtouch0218.pancakepartner.config.GuildSettings;
@@ -14,11 +15,11 @@ import net.dv8tion.jda.core.hooks.ListenerAdapter;
 public class CustomListener extends ListenerAdapter {
 
 	private static final String STAR_REACTION = "\u2B50";
-	private static final String REMOVE_REACTION = new String(Character.toChars(0x1F6AB));	
+	private static final String REMOVE_REACTION = "\u26D4";
 	
 	@Override
 	public void onGenericMessageReaction(GenericMessageReactionEvent e) {
-		if (e.getUser().getIdLong() == e.getJDA().getSelfUser().getIdLong()) { return; }
+		if (e.getUser().isBot()) { return; }
 		
 		if (e.getChannelType() == ChannelType.TEXT) {	
 			//reaction was added within a guild, check for stars.
@@ -41,7 +42,7 @@ public class CustomListener extends ListenerAdapter {
 		if (starinfo.isMessageIgnored(messageId)) { return false; }
 		
 		GuildSettings guildSettings = BotMain.getGuildSettings(e.getGuild());
-		TextChannel starChannel = BotMain.getBotCore().getShardManager().getTextChannelById(guildSettings.getStarChannelID());
+		TextChannel starChannel = BotMain.getBotCore().getShardManager().getTextChannelById(guildSettings.starChannelID);
 		
 		if (starinfo.isMessageStarred(messageId)) {
 			e.getChannel().getMessageById(messageId).queue(m -> {
@@ -50,7 +51,7 @@ public class CustomListener extends ListenerAdapter {
 		} else {
 			e.getReaction().getUsers().queue(u -> {
 				int count = u.size() + 1;
-				if (count > guildSettings.getStarRequiredStars()) {
+				if (count > guildSettings.starRequiredStars) {
 					e.getChannel().getMessageById(messageId).queue(m -> {
 						CmdStar.sendStarredMessage(m, starChannel);
 					});

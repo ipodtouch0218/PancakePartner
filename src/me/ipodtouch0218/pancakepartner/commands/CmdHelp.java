@@ -91,7 +91,7 @@ public class CmdHelp extends BotCommand {
 	private static void outputCommandPage(Guild guild, MessageChannel channel, BotCommand cmd, User sender) {
 		String cmdPrefix = BotMain.getBotCore().getBotSettings().defaultCommandPrefix;
 		if (guild != null) {
-			cmdPrefix = BotMain.getGuildSettings(guild).getCommandPrefix();
+			cmdPrefix = BotMain.getGuildSettings(guild).commandPrefix;
 		}
 		
 		EmbedBuilder embed = new EmbedBuilder();

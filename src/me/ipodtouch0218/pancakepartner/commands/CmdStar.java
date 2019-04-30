@@ -37,11 +37,11 @@ public class CmdStar extends BotCommand {
 		MessageChannel channel = msg.getChannel();
 		GuildSettings guildSettings = BotMain.getGuildSettings(msg.getGuild());
 		
-		if (guildSettings.getStarChannelID() == -1) {
+		if (guildSettings.starChannelID == -1) {
 			channel.sendMessage(":pancakes: **Error:** The star channel is not set! Use 'settings star channel #<channel>' to set the channel for this guild!").queue();
 			return;
 		}
-		TextChannel starChannel = BotMain.getBotCore().getShardManager().getTextChannelById(guildSettings.getStarChannelID());
+		TextChannel starChannel = BotMain.getBotCore().getShardManager().getTextChannelById(guildSettings.starChannelID);
 		
 		if (args.size() <= 0) {
 			channel.sendMessage(":pancakes: **Invalid Arguments:** You must specify a message's ID or a message link.").queue();

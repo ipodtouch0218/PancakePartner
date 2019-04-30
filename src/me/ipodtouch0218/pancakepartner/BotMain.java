@@ -9,6 +9,7 @@ import javax.security.auth.login.LoginException;
 import me.ipodtouch0218.pancakepartner.commands.*;
 import me.ipodtouch0218.pancakepartner.commands.games.CmdMinesweeper;
 import me.ipodtouch0218.pancakepartner.config.GuildSettings;
+import me.ipodtouch0218.pancakepartner.listeners.CustomListener;
 import me.ipodtouch0218.sjbotcore.SJBotCore;
 import me.ipodtouch0218.sjbotcore.command.BotCommand;
 import me.ipodtouch0218.sjbotcore.files.BotSettings;
@@ -21,6 +22,7 @@ public class BotMain  {
 	 * Clean up utils (in general)
 	 * Fix deprications with permissions system. (SJBotCore todo.)
 	 * Remove static methods and only use instance ones.
+	 * Potentionally some logging stuff.
 	 * 
 	 * Give javadocs to some more classes:
 	 * - BotSettings
@@ -63,7 +65,8 @@ public class BotMain  {
 		BotCommand[] commands = {new CmdSettings(), new CmdPing(), new CmdHelp(),
 				new CmdMinesweeper(), new CmdStar(), new CmdRoll(), new CmdPoll(),
 				new CmdBotInfo(), new CmdPurge(), new CmdTextFormat()};
-		Arrays.stream(commands).forEach(cmd -> botCore.registerCommand(cmd));
+		
+		Arrays.stream(commands).forEach(botCore::registerCommand);
 	}
 	
 	//--Configuration--//

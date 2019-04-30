@@ -88,7 +88,7 @@ public class CmdPoll extends BotCommand {
 		GuildSettings settings = BotMain.getGuildSettings(msg.getGuild());
 		MessageChannel postChannel = flags.getFlag("channel")
 				.map(f -> MessageUtils.getMentionedChannel(f.getParameters()[0], BotMain.getBotCore()))
-				.orElse(BotMain.getBotCore().getShardManager().getTextChannelById(settings.getPollChannelID()));
+				.orElse(BotMain.getBotCore().getShardManager().getTextChannelById(settings.pollChannelID));
 		
 		if (postChannel == null) {
 			if (flags.containsFlag("channel")) {
