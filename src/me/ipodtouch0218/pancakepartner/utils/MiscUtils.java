@@ -45,7 +45,7 @@ public class MiscUtils {
 			TimeUnit unit = displayUnits[i];
 			long amount = unit.convert(difference, differenceUnit);
 			if (amount > 0 || (i >= (displayUnits.length-1) && blank)) {
-				//TODO: enum name instead of prefix toggle
+				//TODO: enum name instead of prefix array
 //				output += (amount + " " + (unit.toString().substring(0, unit.toString().length()-(amount == 1 ? 1 : 0))) + " ");
 				output += (amount + timeUnitToPrefix(unit) + " ");
 				blank = false;
@@ -58,4 +58,5 @@ public class MiscUtils {
 	private static String timeUnitToPrefix(TimeUnit unit) {
 		return unitPrefixes[unit.ordinal()];
 	}
+	
 }

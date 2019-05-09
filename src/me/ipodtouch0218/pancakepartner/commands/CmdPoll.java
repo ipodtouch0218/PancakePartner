@@ -9,7 +9,6 @@ import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
 import me.ipodtouch0218.pancakepartner.BotMain;
-import me.ipodtouch0218.pancakepartner.config.GuildSettings;
 import me.ipodtouch0218.pancakepartner.utils.MessageUtils;
 import me.ipodtouch0218.pancakepartner.utils.MiscUtils;
 import me.ipodtouch0218.sjbotcore.SJBotCore;
@@ -20,7 +19,11 @@ import me.ipodtouch0218.sjbotcore.handler.ReactionHandler;
 import me.ipodtouch0218.sjbotcore.util.MessageContainer;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.Permission;
-import net.dv8tion.jda.core.entities.*;
+import net.dv8tion.jda.core.entities.Message;
+import net.dv8tion.jda.core.entities.MessageChannel;
+import net.dv8tion.jda.core.entities.MessageEmbed;
+import net.dv8tion.jda.core.entities.MessageReaction;
+import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.events.message.react.GenericMessageReactionEvent;
 import net.dv8tion.jda.core.requests.RestAction;
 
@@ -85,10 +88,9 @@ public class CmdPoll extends BotCommand {
 			return;
 		}
 
-		GuildSettings settings = BotMain.getGuildSettings(msg.getGuild());
 		MessageChannel postChannel = flags.getFlag("channel")
 				.map(f -> MessageUtils.getMentionedChannel(f.getParameters()[0], BotMain.getBotCore()))
-				.orElse(BotMain.getBotCore().getShardManager().getTextChannelById(settings.pollChannelID));
+				.orElse(msg.getTextChannel());
 		
 		if (postChannel == null) {
 			if (flags.containsFlag("channel")) {

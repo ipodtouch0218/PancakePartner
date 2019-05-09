@@ -8,6 +8,13 @@ import javax.security.auth.login.LoginException;
 
 import me.ipodtouch0218.pancakepartner.commands.*;
 import me.ipodtouch0218.pancakepartner.commands.games.CmdMinesweeper;
+import me.ipodtouch0218.pancakepartner.commands.info.CmdBotInfo;
+import me.ipodtouch0218.pancakepartner.commands.info.CmdHelp;
+import me.ipodtouch0218.pancakepartner.commands.info.CmdPing;
+import me.ipodtouch0218.pancakepartner.commands.staff.CmdPurge;
+import me.ipodtouch0218.pancakepartner.commands.staff.CmdSettings;
+import me.ipodtouch0218.pancakepartner.commands.staff.CmdShell;
+import me.ipodtouch0218.pancakepartner.commands.staff.CmdStar;
 import me.ipodtouch0218.pancakepartner.config.GuildSettings;
 import me.ipodtouch0218.pancakepartner.listeners.CustomListener;
 import me.ipodtouch0218.sjbotcore.SJBotCore;
@@ -19,29 +26,22 @@ import net.dv8tion.jda.core.entities.Guild;
 public class BotMain  {
 
 	/* TODO:
-	 * Clean up utils (in general)
-	 * Fix deprications with permissions system. (SJBotCore todo.)
+	 * Clean up utils, move some methods to SJBotCore.
 	 * Remove static methods and only use instance ones.
-	 * Potentionally some logging stuff.
-	 * 
-	 * Give javadocs to some more classes:
-	 * - BotSettings
-	 * - Finish BotMain
+	 * Potentionally some even logging to a channel.
+	 * Console input parser?
 	 */
-	
-	//PROGRAM START
-	
 	public static void main(String[] args) {
 		new BotMain();
 	}
 	
-	///INSTANCE STUFF
-	//--Variables & Constructor--//
-	private final File configFile = new File("config.yml");
-	private static long startupTime;
-	private static SJBotCore botCore;
-	private static HashMap<Long, GuildSettings> guildSettings = new HashMap<>(); //settings used per guild.
+	//------------------------------//
 	
+	//--Variables & Constructor--//
+	private static SJBotCore botCore;
+	private static final File configFile = new File("config.yml");
+	private static long startupTime;
+	private static HashMap<Long, GuildSettings> guildSettings = new HashMap<>(); //settings used per guild, cached.
 	
 	public BotMain() {
 		buildBot();
@@ -64,7 +64,7 @@ public class BotMain  {
 	private void registerCommands() {
 		BotCommand[] commands = {new CmdSettings(), new CmdPing(), new CmdHelp(),
 				new CmdMinesweeper(), new CmdStar(), new CmdRoll(), new CmdPoll(),
-				new CmdBotInfo(), new CmdPurge(), new CmdTextFormat()};
+				new CmdBotInfo(), new CmdPurge(), new CmdTextFormat(), new CmdShell()};
 		
 		Arrays.stream(commands).forEach(botCore::registerCommand);
 	}

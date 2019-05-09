@@ -19,9 +19,6 @@ public class GuildSettings extends YamlConfig {
 	public long starChannelID = -1; //channel where starred messages should be pasted.
 	public int starRequiredStars = 3; //required amount of stars before the message gets pinned to the star channel.
 	
-	public long pollChannelID = -1; //channel where polls are pasted.
-	public long logChannelID = -1;
-	
 	//--Getters--//
 
 

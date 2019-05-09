@@ -1,4 +1,4 @@
-package me.ipodtouch0218.pancakepartner.commands;
+package me.ipodtouch0218.pancakepartner.commands.staff;
 
 import java.util.ArrayList;
 
@@ -79,32 +79,6 @@ public class CmdSettings extends BotCommand {
 				}
 				default: {
 					channel.sendMessage(":pancakes: **Invalid Arguments** Unknown function `" + args.get(1) + "`, try 'channel' or 'required'.").queue();
-					return;
-				}
-				}
-			}
-			return;
-		}
-		case "poll": {
-			if (args.size() >= 2) {
-				if (args.size() < 3) {
-					channel.sendMessage(":pancakes: **Invalid Arguments** You must specify a subaction.").queue();
-				}
-				switch (args.get(1)) {
-				case "channel": {
-					if (MessageUtils.isChannelMention(args.get(2))) {
-						TextChannel newchannel = MessageUtils.getMentionedChannel(args.get(2), BotMain.getBotCore());
-						
-						channel.sendMessage(":pancakes: Set " + MessageUtils.asChannelMention(newchannel) + " to be the poll message channel!").queue();
-						settings.pollChannelID = newchannel.getIdLong();
-						settings.save(msg.getGuild().getIdLong());
-					} else {
-						channel.sendMessage(":pancakes: **Invalid Arguments** You must mention a text channel as the next parameter!").queue();
-					}
-					return;
-				}
-				default: {
-					channel.sendMessage(":pancakes: **Invalid Arguments** Unknown function `" + args.get(1) + "`, try 'channel'.").queue();
 					return;
 				}
 				}

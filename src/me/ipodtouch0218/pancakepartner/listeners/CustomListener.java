@@ -1,8 +1,8 @@
 package me.ipodtouch0218.pancakepartner.listeners;
 
 import me.ipodtouch0218.pancakepartner.BotMain;
-import me.ipodtouch0218.pancakepartner.commands.CmdStar;
-import me.ipodtouch0218.pancakepartner.commands.CmdStar.StarredMessageInfo;
+import me.ipodtouch0218.pancakepartner.commands.staff.CmdStar;
+import me.ipodtouch0218.pancakepartner.commands.staff.CmdStar.StarredMessageInfo;
 import me.ipodtouch0218.pancakepartner.config.GuildSettings;
 import me.ipodtouch0218.sjbotcore.util.MessageContainer;
 import net.dv8tion.jda.core.entities.ChannelType;

@@ -1,4 +1,4 @@
-package me.ipodtouch0218.pancakepartner.commands;
+package me.ipodtouch0218.pancakepartner.commands.staff;
 
 import java.awt.Color;
 import java.io.File;
