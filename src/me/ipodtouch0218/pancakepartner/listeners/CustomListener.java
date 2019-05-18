@@ -5,12 +5,12 @@ import me.ipodtouch0218.pancakepartner.commands.staff.CmdStar;
 import me.ipodtouch0218.pancakepartner.commands.staff.CmdStar.StarredMessageInfo;
 import me.ipodtouch0218.pancakepartner.config.GuildSettings;
 import me.ipodtouch0218.sjbotcore.util.MessageContainer;
-import net.dv8tion.jda.core.entities.ChannelType;
-import net.dv8tion.jda.core.entities.TextChannel;
-import net.dv8tion.jda.core.events.message.guild.GuildMessageDeleteEvent;
-import net.dv8tion.jda.core.events.message.priv.react.PrivateMessageReactionAddEvent;
-import net.dv8tion.jda.core.events.message.react.GenericMessageReactionEvent;
-import net.dv8tion.jda.core.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.entities.ChannelType;
+import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.events.message.guild.GuildMessageDeleteEvent;
+import net.dv8tion.jda.api.events.message.priv.react.PrivateMessageReactionAddEvent;
+import net.dv8tion.jda.api.events.message.react.GenericMessageReactionEvent;
+import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 public class CustomListener extends ListenerAdapter {
 
@@ -45,14 +45,14 @@ public class CustomListener extends ListenerAdapter {
 		TextChannel starChannel = BotMain.getBotCore().getShardManager().getTextChannelById(guildSettings.starChannelID);
 		
 		if (starinfo.isMessageStarred(messageId)) {
-			e.getChannel().getMessageById(messageId).queue(m -> {
+			e.getChannel().retrieveMessageById(messageId).queue(m -> {
 				CmdStar.editStarredMessage(m);
 			});
 		} else {
-			e.getReaction().getUsers().queue(u -> {
+			e.getReaction().retrieveUsers().queue(u -> {
 				int count = u.size() + 1;
 				if (count > guildSettings.starRequiredStars) {
-					e.getChannel().getMessageById(messageId).queue(m -> {
+					e.getChannel().retrieveMessageById(messageId).queue(m -> {
 						CmdStar.sendStarredMessage(m, starChannel);
 					});
 				}
@@ -75,7 +75,7 @@ public class CustomListener extends ListenerAdapter {
 	public void onPrivateMessageReactionAdd(PrivateMessageReactionAddEvent e) {
 		if (e.getUser().equals(e.getJDA().getSelfUser())) { return; }
 		if (e.getReactionEmote().getName().equals(REMOVE_REACTION)) {
-			e.getChannel().getMessageById(e.getMessageIdLong()).queue(m -> {
+			e.getChannel().retrieveMessageById(e.getMessageIdLong()).queue(m -> {
 				StarredMessageInfo info = CmdStar.getStarredMessageInfo();
 				if (!info.isNotificationMessage(e.getMessageIdLong())) {
 					return;

@@ -6,11 +6,14 @@ import java.util.HashMap;
 
 import javax.security.auth.login.LoginException;
 
-import me.ipodtouch0218.pancakepartner.commands.*;
+import me.ipodtouch0218.pancakepartner.commands.CmdPoll;
+import me.ipodtouch0218.pancakepartner.commands.CmdRoll;
+import me.ipodtouch0218.pancakepartner.commands.CmdTextFormat;
 import me.ipodtouch0218.pancakepartner.commands.games.CmdMinesweeper;
 import me.ipodtouch0218.pancakepartner.commands.info.CmdBotInfo;
 import me.ipodtouch0218.pancakepartner.commands.info.CmdHelp;
 import me.ipodtouch0218.pancakepartner.commands.info.CmdPing;
+import me.ipodtouch0218.pancakepartner.commands.staff.CmdLockdown;
 import me.ipodtouch0218.pancakepartner.commands.staff.CmdPurge;
 import me.ipodtouch0218.pancakepartner.commands.staff.CmdSettings;
 import me.ipodtouch0218.pancakepartner.commands.staff.CmdShell;
@@ -21,7 +24,7 @@ import me.ipodtouch0218.sjbotcore.SJBotCore;
 import me.ipodtouch0218.sjbotcore.command.BotCommand;
 import me.ipodtouch0218.sjbotcore.files.BotSettings;
 import me.ipodtouch0218.sjbotcore.files.YamlConfig;
-import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.api.entities.Guild;
 
 public class BotMain  {
 
@@ -64,7 +67,8 @@ public class BotMain  {
 	private void registerCommands() {
 		BotCommand[] commands = {new CmdSettings(), new CmdPing(), new CmdHelp(),
 				new CmdMinesweeper(), new CmdStar(), new CmdRoll(), new CmdPoll(),
-				new CmdBotInfo(), new CmdPurge(), new CmdTextFormat(), new CmdShell()};
+				new CmdBotInfo(), new CmdPurge(), new CmdTextFormat(), new CmdShell(),
+				new CmdLockdown()};
 		
 		Arrays.stream(commands).forEach(botCore::registerCommand);
 	}

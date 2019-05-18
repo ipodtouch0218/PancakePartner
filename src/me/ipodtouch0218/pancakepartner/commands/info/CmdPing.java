@@ -5,8 +5,8 @@ import java.util.ArrayList;
 import me.ipodtouch0218.pancakepartner.BotMain;
 import me.ipodtouch0218.sjbotcore.command.BotCommand;
 import me.ipodtouch0218.sjbotcore.command.FlagSet;
-import net.dv8tion.jda.bot.sharding.ShardManager;
-import net.dv8tion.jda.core.entities.Message;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.sharding.ShardManager;
 
 public class CmdPing extends BotCommand {
 
@@ -26,7 +26,7 @@ public class CmdPing extends BotCommand {
 		ShardManager m = BotMain.getBotCore().getShardManager();
 		
 		String message = String.format(":pancakes: **%s** \\|\\| Shard: `%dms` | Average: `%.0fms`",
-				reply, msg.getJDA().getPing(), m.getAveragePing());
+				reply, msg.getJDA().getGatewayPing(), m.getAverageGatewayPing());
 
 		msg.getChannel().sendMessage(message).queue();
 		

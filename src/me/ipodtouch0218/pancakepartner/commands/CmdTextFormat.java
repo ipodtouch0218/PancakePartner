@@ -5,8 +5,8 @@ import java.util.Arrays;
 
 import me.ipodtouch0218.sjbotcore.command.BotCommand;
 import me.ipodtouch0218.sjbotcore.command.FlagSet;
-import net.dv8tion.jda.core.entities.Message;
-import net.dv8tion.jda.core.entities.MessageChannel;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageChannel;
 
 public class CmdTextFormat extends BotCommand {
 

@@ -14,10 +14,16 @@ import me.ipodtouch0218.sjbotcore.command.BotCommand;
 import me.ipodtouch0218.sjbotcore.command.FlagSet;
 import me.ipodtouch0218.sjbotcore.files.YamlConfig;
 import me.ipodtouch0218.sjbotcore.util.MessageContainer;
-import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.Permission;
-import net.dv8tion.jda.core.entities.*;
-import net.dv8tion.jda.core.entities.Message.Attachment;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.Message.Attachment;
+import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.entities.MessageReaction;
+import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.User;
 
 public class CmdStar extends BotCommand {
 	
@@ -66,7 +72,7 @@ public class CmdStar extends BotCommand {
 				return;
 			}
 			
-			starMsgChannel.getMessageById(match.group("messageid")).queue(m -> {
+			starMsgChannel.retrieveMessageById(match.group("messageid")).queue(m -> {
 				if (info.starredMessages.containsKey(m.getIdLong())) {
 					channel.sendMessage(":pancakes: **Invalid Argument:** That message is already starred and in <#" + starChannel.getId() + ">.").queue();
 					return;
@@ -85,7 +91,7 @@ public class CmdStar extends BotCommand {
 			return;
 		}
 		
-		channel.getMessageById(args.get(0)).queue(m -> {
+		channel.retrieveMessageById(args.get(0)).queue(m -> {
 			if (info.starredMessages.containsKey(m.getIdLong())) {
 				channel.sendMessage(":pancakes: **Invalid Argument:** That message is already starred and in <#" + starChannel.getId() + ">.").queue();
 				return;
@@ -142,7 +148,7 @@ public class CmdStar extends BotCommand {
 		
 		embed.setFooter(MessageUtils.nameAndDiscrim(m.getAuthor()), m.getAuthor().getAvatarUrl());
 		embed.addField("\u200E", "[Direct Link](" + MessageUtils.getMessageURL(m) + ")", false);
-		embed.setTimestamp(m.getCreationTime());
+		embed.setTimestamp(m.getTimeCreated());
 		if (!m.getAttachments().isEmpty()) {
 			boolean attached = false;
 			for (MessageEmbed embeds : m.getEmbeds()) {

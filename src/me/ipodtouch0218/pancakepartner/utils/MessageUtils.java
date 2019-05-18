@@ -6,10 +6,10 @@ import java.util.regex.Pattern;
 
 import me.ipodtouch0218.sjbotcore.SJBotCore;
 import me.ipodtouch0218.sjbotcore.util.MessageContainer;
-import net.dv8tion.jda.core.entities.Message;
-import net.dv8tion.jda.core.entities.MessageChannel;
-import net.dv8tion.jda.core.entities.TextChannel;
-import net.dv8tion.jda.core.entities.User;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.User;
 
 public class MessageUtils {
 

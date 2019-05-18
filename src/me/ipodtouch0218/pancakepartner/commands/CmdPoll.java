@@ -9,6 +9,8 @@ import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
 import me.ipodtouch0218.pancakepartner.BotMain;
+import me.ipodtouch0218.pancakepartner.commands.CmdPoll.PollInfo;
+import me.ipodtouch0218.pancakepartner.commands.CmdPoll.PollReactionHandler;
 import me.ipodtouch0218.pancakepartner.utils.MessageUtils;
 import me.ipodtouch0218.pancakepartner.utils.MiscUtils;
 import me.ipodtouch0218.sjbotcore.SJBotCore;
@@ -17,15 +19,15 @@ import me.ipodtouch0218.sjbotcore.command.FlagSet;
 import me.ipodtouch0218.sjbotcore.files.YamlConfig;
 import me.ipodtouch0218.sjbotcore.handler.ReactionHandler;
 import me.ipodtouch0218.sjbotcore.util.MessageContainer;
-import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.Permission;
-import net.dv8tion.jda.core.entities.Message;
-import net.dv8tion.jda.core.entities.MessageChannel;
-import net.dv8tion.jda.core.entities.MessageEmbed;
-import net.dv8tion.jda.core.entities.MessageReaction;
-import net.dv8tion.jda.core.entities.User;
-import net.dv8tion.jda.core.events.message.react.GenericMessageReactionEvent;
-import net.dv8tion.jda.core.requests.RestAction;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.entities.MessageReaction;
+import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.events.message.react.GenericMessageReactionEvent;
+import net.dv8tion.jda.api.requests.RestAction;
 
 public class CmdPoll extends BotCommand {
 

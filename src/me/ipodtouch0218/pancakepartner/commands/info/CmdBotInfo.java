@@ -9,12 +9,12 @@ import me.ipodtouch0218.pancakepartner.utils.MessageUtils;
 import me.ipodtouch0218.pancakepartner.utils.MiscUtils;
 import me.ipodtouch0218.sjbotcore.command.BotCommand;
 import me.ipodtouch0218.sjbotcore.command.FlagSet;
-import net.dv8tion.jda.bot.sharding.ShardManager;
-import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.entities.Message;
-import net.dv8tion.jda.core.entities.MessageChannel;
-import net.dv8tion.jda.core.entities.User;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.sharding.ShardManager;
 
 public class CmdBotInfo extends BotCommand {
 
@@ -43,7 +43,7 @@ public class CmdBotInfo extends BotCommand {
 		embed.addField(":chart_with_upwards_trend:  Statistics", String.format("Users: %d | Guilds: %d", manager.getUsers().size(), manager.getGuilds().size()), true);
 		embed.addField(":small_blue_diamond: Shard Info", String.format("Shard: %d out of %d shard(s)", currentJDA.getShardInfo().getShardId()+1, currentJDA.getShardInfo().getShardTotal()), true);
 		embed.addField(":pencil: Memory Usage", String.format("%dMB / %dMB", ramUsed, ramMax), true);
-		embed.addField(":stopwatch: Ping", String.format("Shard: %dms | Avg: %.0fms", currentJDA.getPing(), manager.getAveragePing()), true);
+		embed.addField(":stopwatch: Ping", String.format("Shard: %dms | Avg: %.0fms", currentJDA.getGatewayPing(), manager.getAverageGatewayPing()), true);
 		{
 			long elapsed = System.currentTimeMillis() - BotMain.getStartupTime();
 			String elapsedStr = MiscUtils.timeElapsed(TimeUnit.MILLISECONDS, elapsed, TimeUnit.DAYS, TimeUnit.HOURS, TimeUnit.MINUTES, TimeUnit.SECONDS);

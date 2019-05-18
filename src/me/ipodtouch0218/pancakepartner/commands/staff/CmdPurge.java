@@ -13,8 +13,12 @@ import me.ipodtouch0218.pancakepartner.utils.MessageUtils;
 import me.ipodtouch0218.sjbotcore.command.BotCommand;
 import me.ipodtouch0218.sjbotcore.command.CommandFlag;
 import me.ipodtouch0218.sjbotcore.command.FlagSet;
-import net.dv8tion.jda.core.Permission;
-import net.dv8tion.jda.core.entities.*;
+import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.entities.MessageHistory;
+import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.User;
 
 public class CmdPurge extends BotCommand {
 
@@ -112,7 +116,7 @@ public class CmdPurge extends BotCommand {
 				if (regex != null && !regex.matcher(content).matches()) { continue; }
 						
 				status.attemptedPurged++;
-				if (msgToPurge.getCreationTime().isBefore(twoWeeksAgo)) {
+				if (msgToPurge.getTimeCreated().isBefore(twoWeeksAgo)) {
 					msgToPurge.delete().queue(s -> {
 						status.successfullyPurged++;
 					}, err -> {
