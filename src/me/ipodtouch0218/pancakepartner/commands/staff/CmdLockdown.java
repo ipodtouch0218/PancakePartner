@@ -11,6 +11,7 @@ public class CmdLockdown extends BotCommand {
 
 	public CmdLockdown() {
 		super("lockdown", true, false, Permission.MANAGE_SERVER);
+		setHelpInfo("Enables slowmode for all text channels to help combat raids", "lockdown");
 	}
 
 	@Override

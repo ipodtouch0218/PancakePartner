@@ -9,8 +9,6 @@ import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
 import me.ipodtouch0218.pancakepartner.BotMain;
-import me.ipodtouch0218.pancakepartner.commands.CmdPoll.PollInfo;
-import me.ipodtouch0218.pancakepartner.commands.CmdPoll.PollReactionHandler;
 import me.ipodtouch0218.pancakepartner.utils.MessageUtils;
 import me.ipodtouch0218.pancakepartner.utils.MiscUtils;
 import me.ipodtouch0218.sjbotcore.SJBotCore;

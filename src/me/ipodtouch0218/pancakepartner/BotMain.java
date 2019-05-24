@@ -33,6 +33,7 @@ public class BotMain  {
 	 * Remove static methods and only use instance ones.
 	 * Potentionally some even logging to a channel.
 	 * Console input parser?
+	 * CHANGE FILE STORAGE TO DATABASES!!!!!
 	 */
 	public static void main(String[] args) {
 		new BotMain();

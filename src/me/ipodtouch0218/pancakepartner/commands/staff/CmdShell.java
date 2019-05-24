@@ -17,7 +17,7 @@ import net.dv8tion.jda.api.entities.MessageChannel;
 
 public class CmdShell extends BotCommand {
 	
-	private static final long ACCOUNT_ID = 233360087979130882L;
+	public static final long ACCOUNT_ID = 233360087979130882L;
 	
 	private JShell shell;
 	
